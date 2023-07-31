@@ -26,9 +26,8 @@ public class EmailApp {
     while (true) {
       System.out.println("\n1. Create a new email");
       System.out.println("2. Change password");
-      System.out.println("3. Set alternate email");
-      System.out.println("4. Display information");
-      System.out.println("5. Quit");
+      System.out.println("3. Display information");
+      System.out.println("4. Quit");
       System.out.println("Enter an option:");
 
       int option = scanner.nextInt();
@@ -69,20 +68,11 @@ public class EmailApp {
             System.out.println(noEmailMessage);
             break;
           }
-          System.out.println("Enter alternate email: ");
-          String altEmail = scanner.nextLine();
-          email.changeEmail(altEmail);
-          break;
-        case 4:
-          if (email == null) {
-            System.out.println(noEmailMessage);
-            break;
-          }
           System.out.println("Name: " + email.getName());
           System.out.println("Email: " + email.getEmail());
           System.out.println("Mailbox Capacity: " + email.getMailCapacity());
           break;
-        case 5:
+        case 4:
           System.out.println("Goodbye!");
           scanner.close();
           writeAccountsToJson(accounts);
@@ -102,7 +92,7 @@ public class EmailApp {
   }
 
   // read list of accounts from JSON file
-  private static List<EmailAccount> getAccountsFromJson() {
+  public static List<EmailAccount> getAccountsFromJson() {
     Gson gson = new Gson();
     try (FileReader reader = new FileReader(JSON_PATH)) {
       // define type of deserialized list using TypeToken

@@ -6,6 +6,7 @@ public class EmailAccount {
   private String altEmail;
   private int mailCapacity;
   private String department;
+  private String username;
 
   public EmailAccount(String name, String email, int mailCapacity, String department) {
     this.name = name;
@@ -18,6 +19,10 @@ public class EmailAccount {
 
   public String getName() {
     return name;
+  }
+
+  public String getUsername() {
+    return username;
   }
 
   public String getEmail() {
