@@ -7,12 +7,14 @@ public class EmailAccount {
   private int mailCapacity;
   private String department;
   private String username;
+  private String hashedPassword;
 
-  public EmailAccount(String name, String email, int mailCapacity, String department) {
+  public EmailAccount(String name, String email, int mailCapacity, String department, String hashedPassword) {
     this.name = name;
     this.email = email;
     this.mailCapacity = mailCapacity;
     this.department = department;
+    this.hashedPassword = hashedPassword;
   }
 
   // getters & setters
@@ -35,5 +37,9 @@ public class EmailAccount {
 
   public String getDepartment() {
     return department;
+  }
+
+  public String getPassword() {
+    return hashedPassword;
   }
 }
