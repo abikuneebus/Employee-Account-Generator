@@ -6,7 +6,6 @@ import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -21,7 +20,6 @@ public class Email {
   private String firstName;
   private String lastName;
   private String fullName;
-  // private char[] password;
   private String hashedPassword;
   private String department;
   private int mailboxCapacity = 500;
@@ -37,20 +35,20 @@ public class Email {
 
     // initializing first name
     if (!(isNameValid(firstName) == null)) {
-      // ? how to display invalid name String from 'isNameValid()'? (JavaFX project)
+      showNameErrorDialog(isNameValid(firstName));
     } else {
       this.firstName = firstName;
     }
 
     // initializing last name
     if (!(isNameValid(lastName) == null)) {
-      // ? how to display invalid name String from 'isNameValid()'? (JavaFX project)
+      showNameErrorDialog(isNameValid(lastName));
     } else {
       this.lastName = lastName;
     }
 
     // initializing full name
-    this.fullName = this.firstName + "" + this.lastName;
+    this.fullName = this.firstName + " " + this.lastName;
 
     // generating random password
     this.hashedPassword = generatePassword(defaultPasswordLength);
@@ -70,12 +68,11 @@ public class Email {
 
     // parameterizing employee domain
     this.employeeDomain = (String.format("@%s%s.com",
-        (this.department.equals("N/A") ? "" : String.format("%s.", this.department)), this.companyName)).toLowerCase();
+        (this.department.equals("N/A") ? "" : String.format("%s.", this.department)), this.companyName))
+        .toLowerCase();
 
     // combine elements to create email
     this.emailAddress = String.format("%s%s", this.employeeUsername, this.employeeDomain);
-    // ? handled by 'accountInfo' in 'EmailApp'
-    // System.out.println("Your email address: " + this.emailAddress); // ! remove
   }
 
   // * initialization utility functions
@@ -108,8 +105,8 @@ public class Email {
   }
 
   // name validation
-  public String isNameValid(String name) {
-    if (!name.matches("(?!.*\\s\\s)^[A-Za-z'-\\s]+$")) {
+  public static String isNameValid(String name) {
+    if (!name.matches("(?!.*\\s\\s)^[A-Za-z'\\s-]+$")) {
       return "Name can only contain alphabetical characters, hyphens, apostrophes, and (1) whitespace.";
     }
     return null;
@@ -136,7 +133,7 @@ public class Email {
     // forbidden substrings (defined in 'Constants')
     for (String substring : Constants.FORBIDDEN_SUBSTRINGS) {
       if (passwordString.contains(substring)) {
-        return "Password contains forbidden group of characters. Please avoid using easily guessable words (\"password\", \"qwerty\", etc.), easily guessable numbers (123, 111, etc.), or any public personal information in your password. ";
+        return "Password contains a forbidden group of characters. Please avoid using easily guessable words (\"password\", \"qwerty\", etc.), easily guessable numbers (123, 111, etc.), or any public personal information in your password. ";
       }
     }
     return null;
@@ -151,7 +148,7 @@ public class Email {
   }
 
   private boolean isUsernameTaken(String username) {
-    List<EmailAccount> existingAccounts = EmailApp.getAccountsFromJson();
+    List<EmailAccount> existingAccounts = EmailApp.getAccountsFromJson(); // ! -> SQL
     for (EmailAccount account : existingAccounts) {
       if (account.getUsername().equals(username)) {
         return true;
@@ -165,6 +162,14 @@ public class Email {
       return "Invalid email address, please try again using the following guidelines:\n- Between 4 and 32 characters\n- Contains only letters, numbers, and non-consecutive periods\n- Does not start or end with a period\n\nPlease enter a valid email:\n";
     }
     return null;
+  }
+
+  private void showNameErrorDialog(String errorMessage) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Name Error");
+    alert.setHeaderText(null);
+    alert.setContentText(errorMessage);
+    alert.showAndWait();
   }
 
   // duplicate username: pop-up dialog
@@ -186,7 +191,7 @@ public class Email {
       GridPane popupGrid = new GridPane();
       popupGrid.setHgap(10);
       popupGrid.setVgap(10);
-      popupGrid.setPadding(new Insets(20, 150, 10, 10));
+      popupGrid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
 
       TextField altUsernameField = new TextField();
       altUsernameField.setPromptText("Alternate Username");
@@ -227,6 +232,8 @@ public class Email {
       } else {
         // user chooses to cancel
         usernameIsValid = true;
+        // user cancel clears text
+        altUsernameField.clear();
       }
 
     }
