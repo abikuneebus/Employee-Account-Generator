@@ -1,6 +1,5 @@
 package com.abikuneebus;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,7 +21,7 @@ public class Email {
   private String fullName;
   private String hashedPassword;
   private String department;
-  private int mailboxCapacity = 500;
+  private int mailboxCapacity = 1500;
   private String emailAddress;
   private int defaultPasswordLength = 16;
   private String companyName = "thesoftwarefarm";
@@ -147,14 +146,12 @@ public class Email {
     this.hashedPassword = BCrypt.hashpw(new String(password), BCrypt.gensalt());
   }
 
-  private boolean isUsernameTaken(String username) {
-    List<EmailAccount> existingAccounts = EmailApp.getAccountsFromJson(); // ! -> SQL
-    for (EmailAccount account : existingAccounts) {
-      if (account.getUsername().equals(username)) {
-        return true;
-      }
-    }
-    return false;
+  public boolean isUsernameTaken(String username) {
+    DatabaseManager dbManager = new DatabaseManager();
+    dbManager.connect();
+    boolean isTaken = dbManager.isUsernameTaken(username);
+    dbManager.disconnect();
+    return isTaken;
   }
 
   public String isEmailValid(String username) {
@@ -253,7 +250,15 @@ public class Email {
   }
 
   // * getters
-  public String getName() {
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public String getFullName() {
     return fullName;
   }
 

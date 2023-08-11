@@ -1,22 +1,16 @@
 package com.abikuneebus;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class EmailApp extends Application {
-  private static final String JSON_PATH = "emailAccounts.json"; // ! -> SQL
+public class EmailApp extends Application { // * run app, manage inter-menu navigation
+  private DatabaseManager dbManager;
   public static List<EmailAccount> accounts = new ArrayList<>();
+  private Stage primaryStage; // reference to primary stage
 
   public static void main(String[] args) {
     launch(args);
@@ -24,49 +18,50 @@ public class EmailApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
+    this.primaryStage = primaryStage; // save reference to primary stage
+    showStartMenu(); // show the start menu
+  }
+
+  public void showStartMenu() {
+    StartMenu startMenu = new StartMenu(this);
+    Scene scene = new Scene(startMenu, 400, 300);
     primaryStage.setTitle("Email App");
-
-    // test database connection
-    DatabaseManager.testDatabaseConnection();
-
-    // start EmailAppGUI
-    EmailAppGUI emailAppGUI = new EmailAppGUI(this);
-    Scene scene = new Scene(emailAppGUI.getGridPane(), 400, 300);
     primaryStage.setScene(scene);
     primaryStage.show();
-
-    // load existing accounts from JSON file
-    accounts = getAccountsFromJson(); // ! -> SQL
   }
 
-  // add account to the list and update JSON
+  public void showCreateAccountMenu() {
+    // Logic to show the create account menu
+    // This will be filled in later when you create the CreateAccountMenu class
+  }
+
+  public void showModifyAccountMenu() {
+    // Logic to show the modify account menu
+    // This will be filled in later when you create the ModifyAccountMenu class
+  }
+
+  // start EmailAppGUI
+  EmailAppGUI emailAppGUI = new EmailAppGUI(this);
+
+  // load existing accounts from JSON file
+  // accounts = getAccountsFromJson(); // ! -> SQL
+
   public void addAccount(Email email) {
-    accounts.add(new EmailAccount(email.getName(), email.getEmail(), email.getMailCapacity(),
-        email.getDepartment(), email.getHashedPassword()));
-    writeAccountsToJson(accounts); // ! -> SQL
-  }
+    EmailAccount account = new EmailAccount(email.getFirstName(), email.getLastName(), email.getEmail(),
+        email.getMailCapacity(), email.getDepartment(), email.getHashedPassword());
 
-  // get existing accounts from JSON
-  public static List<EmailAccount> getAccountsFromJson() { // ! -> SQL
-    Gson gson = new Gson(); // ! -> SQL
-    try (FileReader reader = new FileReader(JSON_PATH)) { // ! -> SQL
-      Type listType = new TypeToken<ArrayList<EmailAccount>>() {
-      }.getType();
-      List<EmailAccount> accounts = gson.fromJson(reader, listType); // ! -> SQL
-      return accounts != null ? accounts : new ArrayList<>();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }
-  }
+    dbManager = new DatabaseManager();
+    dbManager.connect();
+    dbManager.insertEmailAccount(account);
+    dbManager.disconnect();
 
-  // write accounts to JSON
-  private static void writeAccountsToJson(List<EmailAccount> accounts) { // ! -> SQL
-    Gson gson = new Gson(); // ! -> SQL
-    try (FileWriter writer = new FileWriter(JSON_PATH)) { // ! -> SQL
-      gson.toJson(accounts, writer); // ! -> SQL
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    accounts.add(account);
   }
 }
+
+// ! writeAccountsToJson() wrote account info to JSON file
+
+// ! getAccountsFromJson() returned list of all accounts in storage
+
+// // test database connection
+// DatabaseManager.testDatabaseConnection();

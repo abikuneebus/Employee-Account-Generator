@@ -58,7 +58,7 @@ public class EmailAppGUI {
     grid.add(accountInfo, 0, 4);
     GridPane.setColumnSpan(accountInfo, 2);
 
-    EmailApp.accounts = EmailApp.getAccountsFromJson();
+    // EmailApp.accounts = EmailApp.getAccountsFromJson();
   }
 
   public GridPane getGridPane() {
@@ -103,7 +103,7 @@ public class EmailAppGUI {
     if (currentEmail == null) {
       accountInfo.setText("");
     } else {
-      accountInfo.setText("Name: " + currentEmail.getName() +
+      accountInfo.setText("Name: " + currentEmail.getFullName() +
           "\nUsername: " + currentEmail.getUsername() +
           "\nDepartment: " + currentEmail.getDepartment() +
           "\nEmail: " + currentEmail.getEmail() +
