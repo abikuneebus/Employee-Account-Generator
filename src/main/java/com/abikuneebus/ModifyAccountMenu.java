@@ -1,9 +1,12 @@
 package com.abikuneebus;
 
+import java.util.Optional;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -104,10 +107,11 @@ public class ModifyAccountMenu extends GridPane {
     lastNameField = new TextField(account.getLastName());
     add(lastNameField, 0, 1);
 
+    // display only
     departmentText = new Text(accountDepartment);
     add(departmentText, 0, 2);
 
-    // TODO email to be displayed without ability to modify
+    // display only
     emailText = new Text(accountEmail);
     add(emailText, 1, 0);
 
@@ -116,23 +120,23 @@ public class ModifyAccountMenu extends GridPane {
     mailCapacityField = new TextField(String.valueOf(account.getMailCapacity()));
     add(mailCapacityField, 1, 2);
 
-    // ? update EmailAccount with values from form
     Button updateAccountBtn = new Button("Update Account");
     updateAccountBtn.setOnAction(e -> updateAccount());
     add(updateAccountBtn, 2, 0);
 
-    // TODO 'Delete Account' Button — (2, 1)
-    // 'DatabaseManager.deleteAccount()'
+    Button deleteAccountBtn = new Button("Delete Account");
+    deleteAccountBtn.setOnAction(e -> deleteAccount(account));
+    add(deleteAccountBtn, 2, 1);
 
-    // TODO 'Back to Main Menu' Button — (2, 2)
+    Button homeBtn = new Button("Back to Main Menu");
+    homeBtn.setOnAction(e -> emailApp.showStartMenu());
+    add(homeBtn, 2, 2);
 
   }
 
-  private void deleteAccount() {
-    
-  }
+  // * utility functions
 
-
+  // * UPDATE
   private void updateAccount() {
     // getting updated values from text fields
     String updatedFirstName = firstNameField.getText();
@@ -148,5 +152,36 @@ public class ModifyAccountMenu extends GridPane {
 
     // updating account in database
     dbManager.updateAccount(updatedAccount);
+  }
+
+  // * DELETE
+
+  private void deleteAccount(EmailAccount account) {
+    // confirm intent
+    Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
+    confirmAlert.setTitle("Confirmation");
+    confirmAlert.setHeaderText("Delete Account");
+    confirmAlert.setContentText("Are you sure you want to delete this account?");
+
+    ButtonType btnYes = new ButtonType("Yes");
+    ButtonType btnNo = new ButtonType("No");
+
+    confirmAlert.getButtonTypes().setAll(btnYes, btnNo);
+
+    Optional<ButtonType> result = confirmAlert.showAndWait();
+    if (result.get() == btnYes) {
+      // deleting account
+      DatabaseManager dbManager = new DatabaseManager();
+      dbManager.deleteAccount(account.getEmail());
+
+      Alert successAlert = new Alert(AlertType.INFORMATION, "Account deleted.");
+      successAlert.showAndWait();
+
+      emailApp.showStartMenu();
+
+    } else {
+      showUpdateDeleteMenu(account);
+    }
+
   }
 }
