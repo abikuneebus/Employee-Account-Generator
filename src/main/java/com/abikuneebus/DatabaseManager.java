@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 public class DatabaseManager {
   private static final String DATABASE_URL = "C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
@@ -68,7 +67,7 @@ public class DatabaseManager {
       pstmt.setString(3, emailAccount.getDepartment());
       pstmt.setString(4, emailAccount.getEmail());
       pstmt.setString(5, emailAccount.getUsername());
-      pstmt.setString(6, emailAccount.getPassword());
+      pstmt.setString(6, emailAccount.getHashedPassword());
       pstmt.setInt(7, emailAccount.getMailCapacity());
 
       // executes prepared statement, inserting data
@@ -105,13 +104,14 @@ public class DatabaseManager {
   }
 
   // * modify existing records
-  public void updateAccount(EmailAccount emailAccount, List<String> fields) {
-    String sql = "UPDATE email_accounts SET mailCapacity = ?, username = ? WHERE email = ?";
+  public void updateAccount(EmailAccount emailAccount) {
+    String sql = "UPDATE email_accounts SET firstName = ?, lastName = ?, mailCapacity = ? WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setInt(1, emailAccount.getMailCapacity());
-      pstmt.setString(2, emailAccount.getUsername());
-      pstmt.setString(3, emailAccount.getEmail());
+      pstmt.setString(1, emailAccount.getFirstName());
+      pstmt.setString(2, emailAccount.getLastName());
+      pstmt.setInt(3, emailAccount.getMailCapacity());
+      pstmt.setString(4, emailAccount.getUsername());
 
       pstmt.executeUpdate();
     } catch (SQLException e) {
@@ -120,17 +120,17 @@ public class DatabaseManager {
   }
 
   // * remove records
-  public void deleteAccount(String username) {
-    String sql = "DELETE FROM email_accounts WHERE username = ?";
+  public void deleteAccount(String email) {
+    String sql = "DELETE FROM email_accounts WHERE email = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setString(1, username);
+      pstmt.setString(1, email);
       int rowsDeleted = pstmt.executeUpdate();
 
       if (rowsDeleted > 0) {
-        System.out.println("Account with username " + username + " successfully deleted.");
+        System.out.println("Account with email address " + email + " successfully deleted.");
       } else {
-        System.out.println("Account with username " + username + " not found.");
+        System.out.println("Account with email address " + email + " not found.");
       }
     } catch (SQLException e) {
       System.out.println("Error deleting account: " + e.getMessage());

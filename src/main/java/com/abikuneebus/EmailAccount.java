@@ -45,7 +45,7 @@ public class EmailAccount {
     return mailCapacity;
   }
 
-  public String getPassword() {
+  public String getHashedPassword() {
     return hashedPassword;
   }
 
