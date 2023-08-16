@@ -15,8 +15,8 @@ import javafx.scene.text.Text;
 
 // * search for existing account & choice to delete/modify
 
-public class ModifyAccountMenu extends GridPane {
-
+public class ModifyAccountMenu extends GridPane { // - class declaration
+  // - instance variables
   private EmailApp emailApp; // reference to main app class
   private TextField userInput;
 
@@ -41,7 +41,9 @@ public class ModifyAccountMenu extends GridPane {
 
   // * MENUS
 
-  public ModifyAccountMenu(EmailApp emailApp) {
+  public ModifyAccountMenu(EmailApp emailApp) { // - constructor
+    // - instance variable assignments
+
     this.emailApp = emailApp;
     showSearchMenu();
   }
@@ -76,11 +78,10 @@ public class ModifyAccountMenu extends GridPane {
     String accountDepartment = account.getDepartment();
     String accountEmail = account.getEmail();
 
-    // populating with retrieved account details & buttons to modify or delete them
-    firstNameField = new TextField(account.getFirstName());
+    firstNameField = new TextField(account.getFirstName()); // modifiable
     add(firstNameField, 0, 0);
 
-    lastNameField = new TextField(account.getLastName());
+    lastNameField = new TextField(account.getLastName()); // modifiable
     add(lastNameField, 0, 1);
 
     departmentText = new Text(accountDepartment); // display only
@@ -89,22 +90,22 @@ public class ModifyAccountMenu extends GridPane {
     emailText = new Text(accountEmail); // display only
     add(emailText, 1, 0);
 
-    Button changePasswordBtn = new Button("Change Password");
+    Button changePasswordBtn = new Button("Change Password"); // to change password menu
     changePasswordBtn.setOnAction(e -> showPasswordMenu(account));
     add(changePasswordBtn, 1, 1);
 
-    mailCapacityField = new TextField(String.valueOf(account.getMailCapacity()));
+    mailCapacityField = new TextField(String.valueOf(account.getMailCapacity())); // modifiable
     add(mailCapacityField, 1, 2);
 
-    Button updateAccountBtn = new Button("Update Account");
+    Button updateAccountBtn = new Button("Update Account"); // updates all values in database
     updateAccountBtn.setOnAction(e -> updateAccount());
     add(updateAccountBtn, 2, 0);
 
-    Button deleteAccountBtn = new Button("Delete Account");
+    Button deleteAccountBtn = new Button("Delete Account"); // deletes account from database
     deleteAccountBtn.setOnAction(e -> deleteAccount(account));
     add(deleteAccountBtn, 2, 1);
 
-    Button homeBtn = new Button("Back to Main Menu");
+    Button homeBtn = new Button("Back to Main Menu"); // returns to start menu
     homeBtn.setOnAction(e -> emailApp.showStartMenu());
     add(homeBtn, 2, 2);
 

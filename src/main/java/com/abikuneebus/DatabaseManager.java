@@ -140,7 +140,7 @@ public class DatabaseManager {
     }
   }
 
-  // * UTILITY
+  // • UTILITY
 
   // * check if given username already exists
   public boolean isUsernameTaken(String username) {
