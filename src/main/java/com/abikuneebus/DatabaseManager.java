@@ -120,7 +120,7 @@ public class DatabaseManager {
   }
 
   // * remove records
-  public void deleteAccount(String email) {
+  public boolean deleteAccount(String email) {
     String sql = "DELETE FROM email_accounts WHERE email = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -129,11 +129,14 @@ public class DatabaseManager {
 
       if (rowsDeleted > 0) {
         System.out.println("Account with email address " + email + " successfully deleted.");
+        return true;
       } else {
         System.out.println("Account with email address " + email + " not found.");
+        return false;
       }
     } catch (SQLException e) {
       System.out.println("Error deleting account: " + e.getMessage());
+      return false;
     }
   }
 
