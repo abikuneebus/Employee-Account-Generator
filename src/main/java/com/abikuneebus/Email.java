@@ -138,13 +138,14 @@ public class Email {
     return null;
   }
 
-  public void changePassword(char[] password) {
-    String passwordValid = isPasswordValid(password);
-    if (passwordValid != null) {
-      throw new IllegalArgumentException(passwordValid);
-    }
-    this.hashedPassword = BCrypt.hashpw(new String(password), BCrypt.gensalt());
-  }
+  // ! unnecessary?
+  // public void changePassword(char[] password) {
+  // String passwordValid = isPasswordValid(password);
+  // if (passwordValid != null) {
+  // throw new IllegalArgumentException(passwordValid);
+  // }
+  // this.hashedPassword = BCrypt.hashpw(new String(password), BCrypt.gensalt());
+  // }
 
   public boolean isUsernameTaken(String username) {
     DatabaseManager dbManager = new DatabaseManager();

@@ -70,6 +70,9 @@ public class CreateNewAccountMenu extends GridPane {
 
       // calling addAccount() in EmailApp with Email as argument
       emailApp.addAccount(email);
+
+      // returning to start menu
+      emailApp.showStartMenu();
     });
 
     add(createAccountBtn, 1, 3);

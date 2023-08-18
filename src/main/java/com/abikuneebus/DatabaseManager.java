@@ -12,7 +12,7 @@ public class DatabaseManager {
 
   private Connection connection;
 
-  // * establish connection
+  // • establish connection
   public void connect() {
     try {
       // loading SQLite JDBC driver
@@ -26,7 +26,7 @@ public class DatabaseManager {
     }
   }
 
-  // * close connection
+  // • close connection
   public void disconnect() {
     try {
       if (connection != null) {
@@ -38,7 +38,7 @@ public class DatabaseManager {
     }
   }
 
-  // * test connection
+  // • test connection
   public static void testDatabaseConnection() {
     String url = "jdbc:sqlite:" + DATABASE_URL;
     try (Connection conn = DriverManager.getConnection(url)) {
@@ -55,9 +55,9 @@ public class DatabaseManager {
     }
   }
 
-  // * GENERAL CRUD
+  // ↓ GENERAL CRUD
 
-  // * adding new accounts
+  // • adding new accounts
   public void insertEmailAccount(EmailAccount emailAccount) {
     String sql = "INSERT INTO email_accounts(firstName,lastName,department,email,username,password, mailboxCapacity) VALUES(?,?,?,?,?,?,?)";
 
@@ -78,7 +78,7 @@ public class DatabaseManager {
     }
   }
 
-  // * retrieve data
+  // • retrieve data
   public void selectAccount(EmailAccount emailAccount) {
     String sql = "SELECT firstName,lastName,department,email,username,password, mailboxCapacity FROM email_accounts WHERE email = ?";
 
@@ -103,15 +103,15 @@ public class DatabaseManager {
     }
   }
 
-  // * modify existing records
-  public void updateAccount(EmailAccount emailAccount) {
+  // • modify existing records
+  public void updateAccount(EmailAccount updatedAccount) {
     String sql = "UPDATE email_accounts SET firstName = ?, lastName = ?, mailCapacity = ? WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setString(1, emailAccount.getFirstName());
-      pstmt.setString(2, emailAccount.getLastName());
-      pstmt.setInt(3, emailAccount.getMailCapacity());
-      pstmt.setString(4, emailAccount.getUsername());
+      pstmt.setString(1, updatedAccount.getFirstName());
+      pstmt.setString(2, updatedAccount.getLastName());
+      pstmt.setInt(3, updatedAccount.getMailCapacity());
+      pstmt.setString(4, updatedAccount.getUsername());
 
       pstmt.executeUpdate();
     } catch (SQLException e) {
@@ -119,7 +119,7 @@ public class DatabaseManager {
     }
   }
 
-  // * remove records
+  // • remove records
   public boolean deleteAccount(String email) {
     String sql = "DELETE FROM email_accounts WHERE email = ?";
 
@@ -140,9 +140,9 @@ public class DatabaseManager {
     }
   }
 
-  // • UTILITY
+  // ↓ UTILITY
 
-  // * check if given username already exists
+  // • check if given username already exists
   public boolean isUsernameTaken(String username) {
     String sql = "SELECT COUNT(username) FROM email_accounts WHERE username = ?";
 
@@ -161,7 +161,7 @@ public class DatabaseManager {
     return false;
   }
 
-  // * selecting account by username
+  // • selecting account by username
   public EmailAccount getAccountByUsername(String username) {
     String sql = "SELECT * FROM email_accounts WHERE username = ?";
 
@@ -185,4 +185,19 @@ public class DatabaseManager {
 
     return null;
   }
+
+  // • updating password
+  public void updatePassword(EmailAccount updatedAccount) {
+    String sql = "UPDATE email_accounts SET hashedPassword = ? WHERE username = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+      pstmt.setString(1, updatedAccount.getHashedPassword());
+      pstmt.setString(2, updatedAccount.getUsername());
+
+      pstmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
 }
