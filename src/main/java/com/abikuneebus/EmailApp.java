@@ -7,7 +7,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class EmailApp extends Application { // * run app, manage inter-menu navigation
+public class EmailApp extends Application {
   private DatabaseManager dbManager;
   public static List<EmailAccount> accounts = new ArrayList<>();
   private Stage primaryStage; // reference to primary stage
@@ -31,20 +31,27 @@ public class EmailApp extends Application { // * run app, manage inter-menu navi
   }
 
   public void showCreateAccountMenu() {
-    // Logic to show the create account menu
-    // This will be filled in later when you create the CreateAccountMenu class
+    CreateNewAccountMenu createNewAccountMenu = new CreateNewAccountMenu(this);
+    Scene scene = new Scene(createNewAccountMenu, 400, 300);
+    primaryStage.setTitle("Create New Account");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
 
   public void showModifyAccountMenu() {
-    // Logic to show the modify account menu
-    // This will be filled in later when you create the ModifyAccountMenu class
+    // creating with null EmailAccount and ModifyAccountMenu initially
+    PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(this, null, null);
+
+    ModifyAccountMenu modifyAccountMenu = new ModifyAccountMenu(this, passwordChangeMenu);
+
+    // setting modifyAccountMenu reference in passwordChangeMenu
+    passwordChangeMenu.setModifyAccountMenu(modifyAccountMenu);
+
+    Scene scene = new Scene(modifyAccountMenu, 400, 300);
+    primaryStage.setTitle("Modify Existing Account");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
-
-  // start EmailAppGUI
-  EmailAppGUI emailAppGUI = new EmailAppGUI(this);
-
-  // load existing accounts from JSON file
-  // accounts = getAccountsFromJson(); // ! -> SQL
 
   public void addAccount(Email email) {
     EmailAccount account = new EmailAccount(email.getFirstName(), email.getLastName(), email.getEmail(),
@@ -58,10 +65,3 @@ public class EmailApp extends Application { // * run app, manage inter-menu navi
     accounts.add(account);
   }
 }
-
-// ! writeAccountsToJson() wrote account info to JSON file
-
-// ! getAccountsFromJson() returned list of all accounts in storage
-
-// // test database connection
-// DatabaseManager.testDatabaseConnection();

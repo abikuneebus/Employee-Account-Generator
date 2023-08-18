@@ -47,7 +47,7 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
     setPadding(new Insets(20, 10, 10, 10));
 
     // username input
-    TextField userInput = new TextField();
+    userInput = new TextField();
     userInput.setPromptText("Enter Username");
     add(userInput, 0, 1);
 
@@ -135,6 +135,7 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
     EmailAccount account = dbManager.getAccountByUsername(username);
     if (account != null) {
       passwordChangeMenu.setAccount(account);
+      passwordChangeMenu.showChangePasswordMenu();
       showUpdateDeleteMenu(account);
     } else {
       // throws alert if not

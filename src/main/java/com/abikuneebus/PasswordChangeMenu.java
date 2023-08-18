@@ -38,6 +38,10 @@ public class PasswordChangeMenu extends GridPane {
     this.account = account;
   }
 
+  public void setModifyAccountMenu(ModifyAccountMenu modifyAccountMenu) {
+    this.modifyAccountMenu = modifyAccountMenu;
+  }
+
   // ~ Password Change Menu
   void showChangePasswordMenu() {
     getChildren().clear();
