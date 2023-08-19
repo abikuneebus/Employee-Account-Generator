@@ -1,6 +1,7 @@
 package com.abikuneebus;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 public class CreateNewAccountMenu extends GridPane {
+  private DatabaseManager dbManager;
 
   private EmailApp emailApp; // reference to main app class
 
@@ -19,6 +21,7 @@ public class CreateNewAccountMenu extends GridPane {
   }
 
   private void initUI() {
+    setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
@@ -69,7 +72,7 @@ public class CreateNewAccountMenu extends GridPane {
       Email email = new Email(firstName, lastName, department);
 
       // calling addAccount() in EmailApp with Email as argument
-      emailApp.addAccount(email);
+      addAccount(email);
 
       // returning to start menu
       emailApp.showStartMenu();
@@ -77,6 +80,18 @@ public class CreateNewAccountMenu extends GridPane {
 
     add(createAccountBtn, 1, 3);
 
+  }
+
+  public void addAccount(Email email) {
+    EmailAccount account = new EmailAccount(email.getFirstName(), email.getLastName(), email.getEmail(),
+        email.getMailCapacity(), email.getDepartment(), email.getUsername(), email.getHashedPassword());
+
+    dbManager = new DatabaseManager();
+    dbManager.connect();
+    dbManager.insertEmailAccount(account);
+    dbManager.disconnect();
+
+    EmailApp.accounts.add(account);
   }
 
 }

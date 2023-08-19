@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class EmailApp extends Application {
-  private DatabaseManager dbManager;
   public static List<EmailAccount> accounts = new ArrayList<>();
   private Stage primaryStage; // reference to primary stage
 
@@ -47,21 +46,10 @@ public class EmailApp extends Application {
     // setting modifyAccountMenu reference in passwordChangeMenu
     passwordChangeMenu.setModifyAccountMenu(modifyAccountMenu);
 
-    Scene scene = new Scene(modifyAccountMenu, 400, 300);
+    Scene scene = new Scene(modifyAccountMenu, 800, 300);
     primaryStage.setTitle("Modify Existing Account");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
 
-  public void addAccount(Email email) {
-    EmailAccount account = new EmailAccount(email.getFirstName(), email.getLastName(), email.getEmail(),
-        email.getMailCapacity(), email.getDepartment(), email.getHashedPassword());
-
-    dbManager = new DatabaseManager();
-    dbManager.connect();
-    dbManager.insertEmailAccount(account);
-    dbManager.disconnect();
-
-    accounts.add(account);
-  }
 }

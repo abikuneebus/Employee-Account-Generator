@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -46,18 +47,19 @@ public class Email {
       this.lastName = lastName;
     }
 
-    // initializing full name
+    // - initializing full name
     this.fullName = this.firstName + " " + this.lastName;
 
-    // generating random password
+    // - generating random password
     this.hashedPassword = generatePassword(defaultPasswordLength);
 
-    // forbidden password substrings
+    // - forbidden password substrings
     Constants.FORBIDDEN_SUBSTRINGS.clear();
     Constants.initializeForbiddenSubstrings(this.firstName, this.lastName, this.department, this.companyName);
 
-    // parameterizing
-    String proposedUsername = String.format("%s.%s", this.firstName.toLowerCase(), this.lastName.toLowerCase());
+    // - parameterizing
+    String proposedUsername = String.format("%s%s", this.firstName.toLowerCase(),
+        capitalizeFirstLetter(this.lastName.toLowerCase()));
 
     if (isUsernameTaken(proposedUsername)) {
       showUsernameTakenDialog();
@@ -65,16 +67,24 @@ public class Email {
       this.employeeUsername = proposedUsername;
     }
 
-    // parameterizing employee domain
+    // - parameterizing employee domain
     this.employeeDomain = (String.format("@%s%s.com",
         (this.department.equals("N/A") ? "" : String.format("%s.", this.department)), this.companyName))
         .toLowerCase();
 
-    // combine elements to create email
+    // - combine elements to create email
     this.emailAddress = String.format("%s%s", this.employeeUsername, this.employeeDomain);
   }
 
   // * initialization utility functions
+
+  private String capitalizeFirstLetter(String input) {
+    if (input == null || input.isEmpty()) {
+      return input;
+    }
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+
   private String generatePassword(int length) {
     Random rnd = new Random();
     char[] password = new char[length];
@@ -138,15 +148,6 @@ public class Email {
     return null;
   }
 
-  // ! unnecessary?
-  // public void changePassword(char[] password) {
-  // String passwordValid = isPasswordValid(password);
-  // if (passwordValid != null) {
-  // throw new IllegalArgumentException(passwordValid);
-  // }
-  // this.hashedPassword = BCrypt.hashpw(new String(password), BCrypt.gensalt());
-  // }
-
   public boolean isUsernameTaken(String username) {
     DatabaseManager dbManager = new DatabaseManager();
     dbManager.connect();
@@ -187,6 +188,7 @@ public class Email {
 
       // laying out controls
       GridPane popupGrid = new GridPane();
+      popupGrid.setAlignment(Pos.CENTER);
       popupGrid.setHgap(10);
       popupGrid.setVgap(10);
       popupGrid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
@@ -237,6 +239,7 @@ public class Email {
     }
   }
 
+  // TODO test alternate username creation
   // create alternate username (if username is taken)
   public void createAltUsername(String username) {
     String emailValid = isEmailValid(username);

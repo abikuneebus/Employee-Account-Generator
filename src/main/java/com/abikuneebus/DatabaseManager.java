@@ -8,9 +8,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-  private static final String DATABASE_URL = "C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
-
+  private static final String DATABASE_URL = "jdbc:sqlite:C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
   private Connection connection;
+
+  // • create table
+  public void createTable() {
+    String sql = "CREATE TABLE IF NOT EXISTS email_accounts ("
+        + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        + "firstname TEXT NOT NULL,"
+        + "lastName TEXT NOT NULL,"
+        + "department TEXT NOT NULL,"
+        + "email TEXT NOT NULL,"
+        + "username TEXT NOT NULL,"
+        + "hashedPassword TEXT NOT NULL,"
+        + "mailboxCapacity INTEGER NOT NULL);";
+
+    try (Statement stmt = connection.createStatement()) {
+      stmt.execute(sql);
+      System.out.println("Table created successfully!");
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+  }
 
   // • establish connection
   public void connect() {
@@ -21,6 +40,9 @@ public class DatabaseManager {
       // establishing connection to SQLite database
       connection = DriverManager.getConnection(DATABASE_URL);
       System.out.println("Connected to database!");
+
+      // create a table if nonexistent
+      createTable();
     } catch (ClassNotFoundException | SQLException e) {
       e.printStackTrace();
     }
@@ -38,28 +60,11 @@ public class DatabaseManager {
     }
   }
 
-  // • test connection
-  public static void testDatabaseConnection() {
-    String url = "jdbc:sqlite:" + DATABASE_URL;
-    try (Connection conn = DriverManager.getConnection(url)) {
-      if (conn != null) {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT sqlite_version() AS 'SQLite Version';");
-
-        while (rs.next()) {
-          System.out.println("SQLite Version: " + rs.getString("SQLite Version"));
-        }
-      }
-    } catch (SQLException e) {
-      System.out.println(e.getMessage());
-    }
-  }
-
   // ↓ GENERAL CRUD
 
   // • adding new accounts
   public void insertEmailAccount(EmailAccount emailAccount) {
-    String sql = "INSERT INTO email_accounts(firstName,lastName,department,email,username,password, mailboxCapacity) VALUES(?,?,?,?,?,?,?)";
+    String sql = "INSERT INTO email_accounts(firstName,lastName,department,email,username,hashedPassword, mailboxCapacity) VALUES(?,?,?,?,?,?,?)";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
       pstmt.setString(1, emailAccount.getFirstName());
@@ -80,7 +85,7 @@ public class DatabaseManager {
 
   // • retrieve data
   public void selectAccount(EmailAccount emailAccount) {
-    String sql = "SELECT firstName,lastName,department,email,username,password, mailboxCapacity FROM email_accounts WHERE email = ?";
+    String sql = "SELECT firstName,lastName,department,email,username,hashedPassword, mailboxCapacity FROM email_accounts WHERE email = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
       pstmt.setString(1, emailAccount.getEmail()); // WHERE email = ?
@@ -92,7 +97,7 @@ public class DatabaseManager {
           emailAccount.setLastName(resultSet.getString("lastName"));
           emailAccount.setDepartment(resultSet.getString("department"));
           emailAccount.setUsername(resultSet.getString("username"));
-          emailAccount.setPassword(resultSet.getString("password"));
+          emailAccount.setPassword(resultSet.getString("hashedPassword"));
           emailAccount.setMailCapacity(resultSet.getInt("mailboxCapacity"));
         } else {
           System.out.println("Account not found.");
@@ -105,7 +110,7 @@ public class DatabaseManager {
 
   // • modify existing records
   public void updateAccount(EmailAccount updatedAccount) {
-    String sql = "UPDATE email_accounts SET firstName = ?, lastName = ?, mailCapacity = ? WHERE username = ?";
+    String sql = "UPDATE email_accounts SET firstName = ?, lastName = ?, mailboxCapacity = ? WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
       pstmt.setString(1, updatedAccount.getFirstName());
@@ -162,22 +167,23 @@ public class DatabaseManager {
   }
 
   // • selecting account by username
-  public EmailAccount getAccountByUsername(String username) {
+  public EmailAccount getAccountByUsername(String usernameInput) {
     String sql = "SELECT * FROM email_accounts WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setString(1, username);
+      pstmt.setString(1, usernameInput);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
         String firstName = rs.getString("firstName");
         String lastName = rs.getString("lastName");
         String email = rs.getString("email");
-        int mailCapacity = rs.getInt("mailCapacity");
+        int mailboxCapacity = rs.getInt("mailboxCapacity");
         String department = rs.getString("department");
+        String username = rs.getString("username");
         String hashedPassword = rs.getString("hashedPassword");
 
-        return new EmailAccount(firstName, lastName, email, mailCapacity, department, hashedPassword);
+        return new EmailAccount(firstName, lastName, email, mailboxCapacity, department, username, hashedPassword);
       }
     } catch (SQLException e) {
       e.printStackTrace();

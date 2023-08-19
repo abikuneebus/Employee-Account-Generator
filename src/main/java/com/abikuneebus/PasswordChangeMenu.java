@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -28,9 +30,15 @@ public class PasswordChangeMenu extends GridPane {
     this.account = account;
     this.modifyAccountMenu = modifyAccountMenu;
 
+    setDefaultButtonSize(200);
+    setPrefSize(800, 300);
+
     // initializing UI
     showChangePasswordMenu();
+  }
 
+  private void setDefaultButtonSize(int width) {
+    getChildren().stream().filter(node -> node instanceof Button).forEach(node -> ((Button) node).setMinWidth(width));
   }
 
   // update account from outside of class
@@ -45,55 +53,52 @@ public class PasswordChangeMenu extends GridPane {
   // ~ Password Change Menu
   void showChangePasswordMenu() {
     getChildren().clear();
+    setAlignment(Pos.CENTER);
+    setHgap(10);
+    setVgap(10);
+    setPadding(new Insets(20, 10, 10, 10));
+
+    // username
+    add(new Text("Enter Username:"), 0, 0);
+    changePWUsername = new TextField();
+    changePWUsername.setPromptText("johnSmith");
+    add(changePWUsername, 1, 0);
+
+    // current password
+    add(new Text("Enter Password:"), 0, 1);
+    changePWExisting = new TextField();
+    changePWExisting.setPromptText("Your password..");
+    add(changePWExisting, 1, 1);
+
+    // new password
+    add(new Text("Enter New Password:"), 0, 3);
+    changePWNew = new TextField();
+    changePWNew.setPromptText("New password...");
+    add(changePWNew, 1, 3);
+
+    // new password confirmation
+    add(new Text("Confirm New Password:"), 0, 4);
+    changePWConfirmNew = new TextField();
+    changePWConfirmNew.setPromptText("New password again...");
+    add(changePWConfirmNew, 1, 4);
 
     String confirmUserInput = changePWUsername.getText();
     String passwordInput = changePWExisting.getText();
     String newPasswordInput = changePWNew.getText();
     String confirmNewPasswordInput = changePWConfirmNew.getText();
 
-    // "username" Text 0, 0
-    add(new Text("Enter Username:"), 0, 0);
-
-    // username TextField 0, 1
-    changePWUsername = new TextField();
-    changePWUsername.setPromptText("johnSmith");
-    add(changePWUsername, 0, 1);
-
-    // 'Password' label
-    add(new Text("Enter Password:"), 1, 0);
-
-    // 'Password' input
-    changePWExisting = new TextField();
-    changePWExisting.setPromptText("Your password..");
-    add(changePWExisting, 1, 1);
-
-    // 'New Password' label
-    add(new Text("Enter New Password:"), 3, 0);
-
-    // 'New Password' Input
-    changePWNew = new TextField();
-    changePWNew.setPromptText("New password...");
-    add(changePWNew, 3, 1);
-
-    // 'Confirm New Password' label
-    add(new Text("Confirm New Password:"), 4, 0);
-
-    // 'Confirm New Password' Input
-    changePWConfirmNew = new TextField();
-    changePWConfirmNew.setPromptText("New password again...");
-    add(changePWConfirmNew, 4, 1);
-
-    // 'OK' button
+    // OK button
     Button passwordChangeBtn = new Button("Change Password");
+    passwordChangeBtn.setMinWidth(200);
     passwordChangeBtn.setOnAction(e -> changePassword(account, confirmUserInput, passwordInput,
         newPasswordInput, confirmNewPasswordInput));
-    add(passwordChangeBtn, 5, 0);
+    add(passwordChangeBtn, 0, 5);
 
-    // 'Cancel' button
+    // cancel button
     Button cancelChangeBtn = new Button("Cancel");
+    cancelChangeBtn.setMinWidth(200);
     cancelChangeBtn.setOnAction(e -> modifyAccountMenu.showUpdateDeleteMenu(account));
-    add(cancelChangeBtn, 5, 1);
-    // - password menu logic
+    add(cancelChangeBtn, 1, 5);
   }
 
   // ~ Utility
@@ -101,7 +106,7 @@ public class PasswordChangeMenu extends GridPane {
   private void changePassword(EmailAccount account, String confirmUserInput, String passwordInput,
       String newPasswordInput, String confirmNewPasswordInput) {
 
-    // - 1) confirm intent to change password
+    // - confirm intent
     Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
     confirmAlert.setTitle("Confirmation");
     confirmAlert.setHeaderText("Password Change");
@@ -114,10 +119,10 @@ public class PasswordChangeMenu extends GridPane {
 
     Optional<ButtonType> result = confirmAlert.showAndWait();
 
-    // if user confirms password change request ("Yes")
+    // user confirms intent
     if (result.get() == btnYes) {
 
-      // - 2) check for empty fields
+      // check for empty fields
       if (confirmUserInput.isEmpty() || passwordInput.isEmpty() || newPasswordInput.isEmpty()
           || confirmNewPasswordInput.isEmpty()) {
         Alert emptyAlert = new Alert(AlertType.WARNING);
@@ -127,7 +132,7 @@ public class PasswordChangeMenu extends GridPane {
         emptyAlert.showAndWait();
       }
 
-      // - 3) verify both new password values match
+      // - verify new password input matches
       // if not identical
       if (!(newPasswordInput.equals(confirmNewPasswordInput))) {
         // show alert
@@ -138,7 +143,7 @@ public class PasswordChangeMenu extends GridPane {
         mismatchAlert.showAndWait();
       }
 
-      // - 4) verify password is correct
+      // - verify existing username & password entered correctly
       String usernameOG = this.account.getUsername();
       String hashedOGPassword = this.account.getHashedPassword();
       boolean passwordMatches = BCrypt.checkpw(passwordInput, hashedOGPassword);
@@ -149,26 +154,26 @@ public class PasswordChangeMenu extends GridPane {
         credAlert.setTitle("Credential Verification Error");
         credAlert.setContentText("Incorrect username or password! Please try again.");
         credAlert.showAndWait();
-
+        // terminate app upon 10 incorrect username/password entries
         if (attempts >= 10) {
           Alert limitAlert = new Alert(Alert.AlertType.ERROR);
           limitAlert.setTitle("Over Limit Error");
           limitAlert.setContentText(
               "Maximum attempts reached! Account access temporarily restricted, please contact your IT administrator.");
           limitAlert.showAndWait();
-          // terminate app execution upon acknowledgment
+          // terminates upon acknowledgment
           System.exit(0);
         }
       } else {
         attempts = 0;
 
-        // - 5) new password input validation
-        // passing new password into password validator
+        // - new password input validation
+        // validating password
         char[] charNewPassword = confirmNewPasswordInput.toCharArray();
         Email email = new Email(null, null, null);
         String passwordValidationResult = email.isPasswordValid(charNewPassword);
 
-        // if password is invalid, display alert with explanation
+        // if invalid, display alert with explanation
         if (passwordValidationResult != null) {
           Alert invalidAlert = new Alert(Alert.AlertType.ERROR);
           invalidAlert.setTitle("Invalid Password");
@@ -176,16 +181,19 @@ public class PasswordChangeMenu extends GridPane {
           invalidAlert.showAndWait();
         }
 
-        // - 6) perform password update
+        // - update password
         // encrypting new password
         String hashedPassword = BCrypt.hashpw(new String(confirmNewPasswordInput), BCrypt.gensalt());
         // creating EmailAccount object with updated password
         EmailAccount updatedAccount = new EmailAccount(account.getFirstName(), account.getLastName(),
-            account.getEmail(), account.getMailCapacity(), account.getDepartment(), hashedPassword);
+            account.getEmail(), account.getMailCapacity(), account.getDepartment(), account.getUsername(),
+            hashedPassword);
 
         // updating database
         DatabaseManager dbManager = new DatabaseManager();
+        dbManager.connect();
         dbManager.updatePassword(updatedAccount);
+        dbManager.disconnect();
 
       }
       // if user selects 'No', close dialog

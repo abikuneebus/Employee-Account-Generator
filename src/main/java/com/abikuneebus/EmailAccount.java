@@ -4,18 +4,20 @@ public class EmailAccount {
   private String firstName;
   private String lastName;
   private String email;
-  private int mailCapacity;
+  private int mailboxCapacity;
   private String department;
   private String username;
   private String hashedPassword;
 
-  public EmailAccount(String firstName, String lastName, String email, int mailCapacity, String department,
+  public EmailAccount(String firstName, String lastName, String email, int mailboxCapacity, String department,
+      String username,
       String hashedPassword) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
-    this.mailCapacity = mailCapacity;
+    this.mailboxCapacity = mailboxCapacity;
     this.department = department;
+    this.username = username;
     this.hashedPassword = hashedPassword;
   }
 
@@ -42,7 +44,7 @@ public class EmailAccount {
   }
 
   public int getMailCapacity() {
-    return mailCapacity;
+    return mailboxCapacity;
   }
 
   public String getHashedPassword() {
@@ -72,7 +74,7 @@ public class EmailAccount {
   }
 
   public void setMailCapacity(int capacity) {
-    this.mailCapacity = capacity;
+    this.mailboxCapacity = capacity;
   }
 
 }
