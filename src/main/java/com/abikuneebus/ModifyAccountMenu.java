@@ -20,9 +20,8 @@ import javafx.scene.text.Text;
 
 // * search for existing account & choice to delete/modify
 
-public class ModifyAccountMenu extends GridPane { // - class declaration
-  // - instance variables
-  private EmailApp emailApp; // reference to main app class
+public class ModifyAccountMenu extends GridPane {
+  private EmailApp emailApp;
   private PasswordChangeMenu passwordChangeMenu;
 
   // update/delete menu
@@ -39,8 +38,6 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
 
     this.emailApp = emailApp;
     this.passwordChangeMenu = passwordChangeMenu;
-
-    // setDefaultButtonSize(200);
 
     showSearchMenu();
   }
@@ -82,38 +79,9 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
 
   // * allows modification of account details or deletion of account
 
-  // 0 1 2 3
-  // 0 Update Account Information
-  // 1 First Name: _________________________
-  // 2 Last Name: _________________________
-  // 3 Department: _________________________
-  // 4 Email Address: _________________________
-  // 5 Mailbox Capacity _________________________
-  // 6 |UPDATE| |DELETE| |CHANGE PW| |MAIN MENU|
-
-  /*
-   * //! Labels & TextFields
-   * menu welcome 0, 0 - 0, 3
-   * firstName L: 0, 1
-   * firstName TF:
-   * lastName L: 0, 2
-   * * firstName TF:
-   * department L: 0, 3
-   * * firstName TF:
-   * email L: 0, 4
-   * * firstName TF:
-   * mailCapacity L: 0, 5
-   * * firstName TF:
-   * //! Buttons
-   * Update B: 0, 6
-   * Delete B: 1, 6
-   * Change PW B: 2, 6
-   * Main Menu B: 3, 6
-   */
-
   void showUpdateDeleteMenu(EmailAccount existingAccount) {
     getChildren().clear();
-    setPrefSize(400, 650);
+    setPrefSize(750, 375);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
@@ -128,15 +96,15 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
 
     getColumnConstraints().addAll(labelColumn, textFieldColumn);
 
-    // # labels
+    // - labels
     add(new Label("First Name:"), 0, 1);
     add(new Label("Last Name:"), 0, 2);
     add(new Label("Department:"), 0, 3);
     add(new Label("Email Address:"), 0, 4);
     add(new Label("Mailbox Capacity:"), 0, 5);
 
-    // # text fields
-    // TODO style user welcome
+    // - text fields
+    // TODO make '-fx-menu-intro-text' class
     Text modAccountIntroText = new Text("Modifying account of " + existingAccount.getUsername() + ".");
     modAccountIntroText.setStyle("-fx-menu-intro-text");
     add(modAccountIntroText, 1, 0, 2, 1);
@@ -157,22 +125,22 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
     emailText.setStyle("-fx-display-textfield");
     add(emailText, 1, 4);
 
-    // TODO add mailboxCapacity validation (range, character input)
     mailCapacityField = new TextField(String.valueOf(existingAccount.getMailCapacity())); // modifiable
     add(mailCapacityField, 1, 5);
 
-    // # buttons
+    // - buttons
     HBox buttonsBox = new HBox();
-    // - updates all values in database
+
+    // updates all values in database
     Button updateAccountBtn = new Button("Update Account");
 
-    // - to change password menu
+    // to change password menu
     Button changePasswordBtn = new Button("Change Password");
 
-    // - deletes account from database
+    // deletes account from database
     Button deleteAccountBtn = new Button("Delete Account");
 
-    // - returns to start menu
+    // returns to start menu
     Button homeBtn = new Button("Back to Main Menu");
 
     buttonsBox.getChildren().addAll(updateAccountBtn, changePasswordBtn, deleteAccountBtn, homeBtn);
@@ -206,21 +174,14 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
 
     // validation
     String validationMsg = Email.isNameValid(usernameInput);
+
     if (usernameInput.isEmpty()) {
-      Alert alert = new Alert(AlertType.WARNING);
-      alert.setTitle("Input Error");
-      alert.setHeaderText("Missing Information");
-      alert.setContentText("Username required!");
-      alert.showAndWait();
+      showErrorAlert("Required Field", "Missing Information", "Username Required!");
       return;
     }
 
     if (validationMsg != null) {
-      Alert alert = new Alert(AlertType.WARNING);
-      alert.setTitle("Input Error");
-      alert.setHeaderText("Invalid Input");
-      alert.setContentText(validationMsg);
-      alert.showAndWait();
+      showErrorAlert("Input Error", "Invalid Entry", validationMsg);
       return;
     }
 
@@ -259,20 +220,35 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
       String updatedLastName = lastNameField.getText();
       int updatedMailCapacity = Integer.parseInt(mailCapacityField.getText());
 
-      // create EmailAccount object with updated values
-      EmailAccount updatedAccount = new EmailAccount(updatedFirstName, updatedLastName, existingAccount.getEmail(),
-          updatedMailCapacity, existingAccount.getDepartment(), existingAccount.getUsername(),
-          existingAccount.getHashedPassword());
+      String invalidFirstName = Email.isNameValid(updatedFirstName);
+      String invalidLastName = Email.isNameValid(updatedLastName);
+      String invalidMailCapacity = Email.isMailCapacityValid(updatedMailCapacity);
 
-      // update account in database
-      DatabaseManager dbManager = new DatabaseManager();
-      dbManager.connect();
-      dbManager.updateAccount(updatedAccount);
-      dbManager.disconnect();
+      if (!(invalidFirstName == null)) {
+        showErrorAlert("Input Error", "Invalid Entry", invalidFirstName);
 
-      // return to home menu
-      emailApp.showStartMenu();
+      } else if (!(invalidLastName == null)) {
+        showErrorAlert("Input Error", "Invalid Entry", invalidLastName);
 
+      } else if (!(invalidMailCapacity == null)) {
+        showErrorAlert("Input Error", "Invalid Entry", invalidMailCapacity);
+
+      } else {
+
+        // create EmailAccount object with updated values
+        EmailAccount updatedAccount = new EmailAccount(updatedFirstName, updatedLastName, existingAccount.getEmail(),
+            updatedMailCapacity, existingAccount.getDepartment(), existingAccount.getUsername(),
+            existingAccount.getHashedPassword());
+
+        // update account in database
+        DatabaseManager dbManager = new DatabaseManager();
+        dbManager.connect();
+        dbManager.updateAccount(updatedAccount);
+        dbManager.disconnect();
+
+        // return to home menu
+        emailApp.showStartMenu();
+      }
     } else {
       // close dialog
       confirmAlert.getDialogPane().getScene().getWindow().hide();
@@ -325,6 +301,16 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
       // if user does not want to proceed with account deletion ("No")
       showUpdateDeleteMenu(account);
     }
+  }
+
+  // * CREATE ALERTS
+
+  private void showErrorAlert(String title, String header, String content) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(header);
+    alert.setContentText(content);
+    alert.showAndWait();
   }
 
 }

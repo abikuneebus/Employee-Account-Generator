@@ -17,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 public class Email extends GridPane {
-  // * declaring class-level variables
   private String firstName;
   private String lastName;
   private String fullName;
@@ -37,24 +36,20 @@ public class Email extends GridPane {
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
-    // initializing class-level variables
     this.department = department;
 
-    // initializing first name
     if (!(isNameValid(firstName) == null)) {
       showNameErrorDialog(isNameValid(firstName));
     } else {
       this.firstName = firstName;
     }
 
-    // initializing last name
     if (!(isNameValid(lastName) == null)) {
       showNameErrorDialog(isNameValid(lastName));
     } else {
       this.lastName = lastName;
     }
 
-    // - initializing full name
     this.fullName = this.firstName + " " + this.lastName;
 
     // - generating random password
@@ -64,26 +59,31 @@ public class Email extends GridPane {
     Constants.FORBIDDEN_SUBSTRINGS.clear();
     Constants.initializeForbiddenSubstrings(this.firstName, this.lastName, this.department, this.companyName);
 
-    // - parameterizing
+    // - proposed username construction
     String proposedUsername = String.format("%s%s", this.firstName.toLowerCase(),
         capitalizeFirstLetter(this.lastName.toLowerCase()));
 
-    if (isUsernameTaken(proposedUsername)) {
-      showUsernameTakenDialog();
+    // • proposed username validation
+    String validUserTry = isUsernameValid(proposedUsername);
+
+    if (!(validUserTry == null)) {
+      // if invalid, launch alternate username dialog
+      invalidUsernameDialog(validUserTry);
+      // if valid, initialize
     } else {
       this.employeeUsername = proposedUsername;
     }
 
-    // - parameterizing employee domain
+    // - employee domain
     this.employeeDomain = (String.format("@%s%s.com",
         (this.department.equals("N/A") ? "" : String.format("%s.", this.department)), this.companyName))
         .toLowerCase();
 
-    // - combine elements to create email
+    // - combining username & domain to create email
     this.emailAddress = String.format("%s%s", this.employeeUsername, this.employeeDomain);
   }
 
-  // * initialization utility functions
+  // ↓ initialization utility functions
 
   private String capitalizeFirstLetter(String input) {
     if (input == null || input.isEmpty()) {
@@ -110,17 +110,17 @@ public class Email extends GridPane {
     return BCrypt.hashpw(new String(password), BCrypt.gensalt());
   }
 
-  // * setters & setter utility functions
+  // ↓ utility functions
 
-  public void setMailboxCapacity(int mailboxCapacity) {
-    if (mailboxCapacity < 250 || mailboxCapacity > 1500) {
-      throw new IllegalArgumentException("Mailbox capacity must be between 250 & 1500.");
-    } else {
-      this.mailboxCapacity = mailboxCapacity;
+  // - mailbox capacity validation
+  public static String isMailCapacityValid(int capacity) {
+    if (!(capacity <= 2500 && capacity >= 500)) {
+      return "Mailbox capacity must be between 500 & 2500 messages.";
     }
+    return null;
   }
 
-  // name validation
+  // - name validation
   public static String isNameValid(String name) {
     if (!name.matches("(?!.*\\s\\s)^[A-Za-z'\\s-]+$")) {
       return "Name can only contain alphabetical characters, hyphens, apostrophes, and (1) whitespace.";
@@ -128,7 +128,7 @@ public class Email extends GridPane {
     return null;
   }
 
-  // password validator
+  // - password validator
   public String isPasswordValid(char[] password) {
     if (password.length < 12 || password.length > 32) {
       return "Password must be between 12 and 32 characters. ";
@@ -155,14 +155,7 @@ public class Email extends GridPane {
     return null;
   }
 
-  public boolean isUsernameTaken(String username) {
-    DatabaseManager dbManager = new DatabaseManager();
-    dbManager.connect();
-    boolean isTaken = dbManager.isUsernameTaken(username);
-    dbManager.disconnect();
-    return isTaken;
-  }
-
+  // - email validation
   public String isEmailValid(String username) {
     if (!(username.matches("^(?!.*\\.\\.)(?!.*\\.$)(?!\\.)[a-zA-Z0-9.]{4,32}$"))) {
       return "Invalid email address, please try again using the following guidelines:\n- Between 4 and 32 characters\n- Contains only letters, numbers, and non-consecutive periods\n- Does not start or end with a period\n\nPlease enter a valid email:\n";
@@ -178,16 +171,47 @@ public class Email extends GridPane {
     alert.showAndWait();
   }
 
-  // duplicate username: pop-up dialog
-  public void showUsernameTakenDialog() {
+  // - duplicate username check
+  public boolean isUsernameTaken(String username) {
+    DatabaseManager dbManager = new DatabaseManager();
+    dbManager.connect();
+    boolean isTaken = dbManager.isUsernameTaken(username);
+    dbManager.disconnect();
+    return isTaken;
+  }
+
+  // - username validation
+  public String isUsernameValid(String username) {
+    // checking database
+    DatabaseManager dbManager = new DatabaseManager();
+    dbManager.connect();
+    boolean isDuplicate = dbManager.isUsernameTaken(username);
+    dbManager.disconnect();
+
+    // if username has invalid characters, return username guidelines
+    if (!(username.matches("^(?!.*[-.]{2,}|[-.].*|.*[-.]$)[a-zA-Z.-]{4,32}$"))) {
+      return "Invalid username, please try again using the following guidelines:\n- Between 4 and 32 characters\n- Contains only letters, one hyphen, and one period\n- Hyphen and period cannot be consecutive\n\nPlease enter a valid username:\n";
+      // if username is valid, check for duplicates
+    } else if (isDuplicate) {
+      // if username is duplicate, return explanation & suggestions
+      return "An account with this username already exists. Please enter an alternate username using some combination of your first, middle, and last name or initials.\\n"
+          + //
+          "Examples: john.bruce.wayne, john.b.wayne, j.b.wayne, etc.";
+    }
+    // if username valid & not a duplicate, return null
+    return null;
+  }
+
+  // - duplicate username: pop-up
+  public void invalidUsernameDialog(String validUserTry) {
     boolean usernameIsValid = false;
 
     while (!usernameIsValid) {
       // create dialog
       Dialog<String> dialog = new Dialog<>();
-      dialog.setTitle("Username Already Taken");
+      dialog.setTitle("Invalid Username");
       dialog.setHeaderText(
-          "An account with this username already exists. Please enter an alternate username using some combination of your first, middle, and last name or initials.\nExamples: john.bruce.wayne, john.b.wayne, j.b.wayne, etc.");
+          validUserTry);
 
       // setting close operation
       ButtonType cancelButtonType = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
@@ -201,7 +225,7 @@ public class Email extends GridPane {
       popupGrid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
 
       TextField altUsernameField = new TextField();
-      altUsernameField.setPromptText("Alternate Username");
+      altUsernameField.setPromptText("johnBSmith");
 
       popupGrid.add(new Label("Please enter an alternate username:"), 0, 0);
       popupGrid.add(altUsernameField, 1, 0);
@@ -226,8 +250,10 @@ public class Email extends GridPane {
       Optional<String> result = dialog.showAndWait();
       if (result.isPresent()) {
         try {
+          // end loop if given username valid
           createAltUsername(result.get());
           usernameIsValid = true;
+          // continue loop if given username invalid
         } catch (IllegalArgumentException ex) {
           // display error dialog
           Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -235,6 +261,7 @@ public class Email extends GridPane {
           alert.setHeaderText(null);
           alert.setContentText(ex.getMessage());
           alert.showAndWait();
+
         }
       } else {
         // user chooses to cancel
@@ -246,15 +273,13 @@ public class Email extends GridPane {
     }
   }
 
-  // TODO test alternate username creation
-  // create alternate username (if username is taken)
+  // - create alternate username (if username is taken)
   public void createAltUsername(String username) {
-    String emailValid = isEmailValid(username);
-    if (emailValid != null) {
-      throw new IllegalArgumentException(emailValid); // prints reason for invalidity
-    }
-    if (isUsernameTaken(username)) {
-      throw new IllegalArgumentException("Sorry, this username is already in use.");
+
+    // validate username
+    String usernameValid = isUsernameValid(username);
+    if (usernameValid != null) {
+      throw new IllegalArgumentException(usernameValid); // prints reason for invalidity
     }
     this.employeeUsername = username;
     this.emailAddress = String.format("%s%s", this.employeeUsername, this.employeeDomain); // update email
