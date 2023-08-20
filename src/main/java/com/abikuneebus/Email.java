@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -15,7 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-public class Email {
+public class Email extends GridPane {
   // * declaring class-level variables
   private String firstName;
   private String lastName;
@@ -30,6 +31,12 @@ public class Email {
   private String employeeUsername;
 
   public Email(String firstName, String lastName, String department) {
+    getChildren().clear();
+    setPrefSize(400, 300);
+    setAlignment(Pos.CENTER);
+    setHgap(10);
+    setVgap(10);
+    setPadding(new Insets(20, 10, 10, 10));
     // initializing class-level variables
     this.department = department;
 
@@ -196,7 +203,7 @@ public class Email {
       TextField altUsernameField = new TextField();
       altUsernameField.setPromptText("Alternate Username");
 
-      popupGrid.add(new Label("Alternate Username:"), 0, 0);
+      popupGrid.add(new Label("Please enter an alternate username:"), 0, 0);
       popupGrid.add(altUsernameField, 1, 0);
       dialog.getDialogPane().setContent(popupGrid);
 

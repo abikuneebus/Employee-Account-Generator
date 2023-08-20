@@ -2,15 +2,20 @@ package com.abikuneebus;
 
 import java.util.Optional;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 
 // * search for existing account & choice to delete/modify
@@ -24,9 +29,9 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
   private TextField userInputField;
   private TextField firstNameField;
   private TextField lastNameField;
-  private Text departmentText;
+  private TextField departmentText;
   private TextField mailCapacityField;
-  private Text emailText;
+  private TextField emailText;
 
   // * MENUS
 
@@ -35,19 +40,15 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
     this.emailApp = emailApp;
     this.passwordChangeMenu = passwordChangeMenu;
 
-    setPrefSize(800, 300);
-    setDefaultButtonSize(200);
+    // setDefaultButtonSize(200);
 
     showSearchMenu();
-  }
-
-  private void setDefaultButtonSize(int width) {
-    getChildren().stream().filter(node -> node instanceof Button).forEach(node -> ((Button) node).setMinWidth(width));
   }
 
   // * search menu
   private void showSearchMenu() {
     getChildren().clear();
+    setPrefSize(400, 300);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
@@ -81,49 +82,120 @@ public class ModifyAccountMenu extends GridPane { // - class declaration
 
   // * allows modification of account details or deletion of account
 
+  // 0 1 2 3
+  // 0 Update Account Information
+  // 1 First Name: _________________________
+  // 2 Last Name: _________________________
+  // 3 Department: _________________________
+  // 4 Email Address: _________________________
+  // 5 Mailbox Capacity _________________________
+  // 6 |UPDATE| |DELETE| |CHANGE PW| |MAIN MENU|
+
+  /*
+   * //! Labels & TextFields
+   * menu welcome 0, 0 - 0, 3
+   * firstName L: 0, 1
+   * firstName TF:
+   * lastName L: 0, 2
+   * * firstName TF:
+   * department L: 0, 3
+   * * firstName TF:
+   * email L: 0, 4
+   * * firstName TF:
+   * mailCapacity L: 0, 5
+   * * firstName TF:
+   * //! Buttons
+   * Update B: 0, 6
+   * Delete B: 1, 6
+   * Change PW B: 2, 6
+   * Main Menu B: 3, 6
+   */
+
   void showUpdateDeleteMenu(EmailAccount existingAccount) {
     getChildren().clear();
+    setPrefSize(400, 650);
+    setAlignment(Pos.CENTER);
+    setHgap(10);
+    setVgap(10);
+    setPadding(new Insets(20, 10, 10, 10));
 
-    Text userWelcome = new Text("Welcome, " + existingAccount.getUsername() + "!");
-    add(userWelcome, 1, 0, 2, 1);
+    // column constraints
+    ColumnConstraints labelColumn = new ColumnConstraints(150, 150, Double.MAX_VALUE);
+    labelColumn.setHalignment(HPos.RIGHT);
+
+    ColumnConstraints textFieldColumn = new ColumnConstraints(300, 300, Double.MAX_VALUE);
+    textFieldColumn.setHgrow(Priority.ALWAYS);
+
+    getColumnConstraints().addAll(labelColumn, textFieldColumn);
+
+    // # labels
+    add(new Label("First Name:"), 0, 1);
+    add(new Label("Last Name:"), 0, 2);
+    add(new Label("Department:"), 0, 3);
+    add(new Label("Email Address:"), 0, 4);
+    add(new Label("Mailbox Capacity:"), 0, 5);
+
+    // # text fields
+    // TODO style user welcome
+    Text modAccountIntroText = new Text("Modifying account of " + existingAccount.getUsername() + ".");
+    modAccountIntroText.setStyle("-fx-menu-intro-text");
+    add(modAccountIntroText, 1, 0, 2, 1);
 
     firstNameField = new TextField(existingAccount.getFirstName()); // modifiable
-    add(firstNameField, 0, 1);
+    add(firstNameField, 1, 1);
 
     lastNameField = new TextField(existingAccount.getLastName()); // modifiable
-    add(lastNameField, 1, 1);
+    add(lastNameField, 1, 2);
 
-    departmentText = new Text(existingAccount.getDepartment()); // display only
-    add(departmentText, 2, 1);
+    departmentText = new TextField(existingAccount.getDepartment()); // display only
+    departmentText.setEditable(false);
+    departmentText.setStyle("-fx-display-textfield");
+    add(departmentText, 1, 3);
 
-    emailText = new Text(existingAccount.getEmail()); // display only
-    add(emailText, 3, 1);
+    emailText = new TextField(existingAccount.getEmail()); // display only
+    emailText.setEditable(false);
+    emailText.setStyle("-fx-display-textfield");
+    add(emailText, 1, 4);
 
-    Button changePasswordBtn = new Button("Change Password"); // to change password menu
-    changePasswordBtn.setOnAction(e -> {
-      passwordChangeMenu.showChangePasswordMenu(); // TODO button not doing anything (no exceptions)
-    });
-    add(changePasswordBtn, 2, 1);
-
-    mailCapacityField = new TextField(String.valueOf(existingAccount.getMailCapacity())); // modifiable
-    add(mailCapacityField, 4, 1);
     // TODO add mailboxCapacity validation (range, character input)
+    mailCapacityField = new TextField(String.valueOf(existingAccount.getMailCapacity())); // modifiable
+    add(mailCapacityField, 1, 5);
 
-    Button updateAccountBtn = new Button("Update Account"); // updates all values in database
-    changePasswordBtn.setMinWidth(200);
+    // # buttons
+    HBox buttonsBox = new HBox();
+    // - updates all values in database
+    Button updateAccountBtn = new Button("Update Account");
+
+    // - to change password menu
+    Button changePasswordBtn = new Button("Change Password");
+
+    // - deletes account from database
+    Button deleteAccountBtn = new Button("Delete Account");
+
+    // - returns to start menu
+    Button homeBtn = new Button("Back to Main Menu");
+
+    buttonsBox.getChildren().addAll(updateAccountBtn, changePasswordBtn, deleteAccountBtn, homeBtn);
+    buttonsBox.setSpacing(10);
+    buttonsBox.setAlignment(Pos.CENTER);
+    HBox.setHgrow(updateAccountBtn, Priority.ALWAYS);
+    HBox.setHgrow(changePasswordBtn, Priority.ALWAYS);
+    HBox.setHgrow(deleteAccountBtn, Priority.ALWAYS);
+    HBox.setHgrow(homeBtn, Priority.ALWAYS);
+
+    // set actions
     updateAccountBtn.setOnAction(e -> updateAccount(existingAccount));
-    add(updateAccountBtn, 1, 2);
 
-    Button deleteAccountBtn = new Button("Delete Account"); // deletes account from database
-    deleteAccountBtn.setMinWidth(200);
+    changePasswordBtn.setOnAction(e -> {
+      passwordChangeMenu.showChangePasswordMenu();
+      emailApp.showPasswordChangeMenu(passwordChangeMenu);
+    });
+
     deleteAccountBtn.setOnAction(e -> deleteAccount(existingAccount));
-    add(deleteAccountBtn, 3, 2);
 
-    Button homeBtn = new Button("Back to Main Menu"); // returns to start menu
-    homeBtn.setMinWidth(200);
     homeBtn.setOnAction(e -> emailApp.showStartMenu());
-    add(homeBtn, 2, 2);
 
+    add(buttonsBox, 0, 6, 2, 1);
   }
 
   // * UTILITY FUNCTIONS

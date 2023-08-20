@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -30,15 +31,10 @@ public class PasswordChangeMenu extends GridPane {
     this.account = account;
     this.modifyAccountMenu = modifyAccountMenu;
 
-    setDefaultButtonSize(200);
     setPrefSize(800, 300);
 
     // initializing UI
     showChangePasswordMenu();
-  }
-
-  private void setDefaultButtonSize(int width) {
-    getChildren().stream().filter(node -> node instanceof Button).forEach(node -> ((Button) node).setMinWidth(width));
   }
 
   // update account from outside of class
@@ -52,7 +48,8 @@ public class PasswordChangeMenu extends GridPane {
 
   // ~ Password Change Menu
   void showChangePasswordMenu() {
-    getChildren().clear();
+    // getChildren().clear();
+    setPrefSize(600, 400);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
@@ -66,45 +63,40 @@ public class PasswordChangeMenu extends GridPane {
 
     // current password
     add(new Text("Enter Password:"), 0, 1);
-    changePWExisting = new TextField();
+    changePWExisting = new PasswordField();
     changePWExisting.setPromptText("Your password..");
     add(changePWExisting, 1, 1);
 
     // new password
     add(new Text("Enter New Password:"), 0, 3);
-    changePWNew = new TextField();
+    changePWNew = new PasswordField();
     changePWNew.setPromptText("New password...");
     add(changePWNew, 1, 3);
 
     // new password confirmation
     add(new Text("Confirm New Password:"), 0, 4);
-    changePWConfirmNew = new TextField();
+    changePWConfirmNew = new PasswordField();
     changePWConfirmNew.setPromptText("New password again...");
     add(changePWConfirmNew, 1, 4);
 
-    String confirmUserInput = changePWUsername.getText();
-    String passwordInput = changePWExisting.getText();
-    String newPasswordInput = changePWNew.getText();
-    String confirmNewPasswordInput = changePWConfirmNew.getText();
-
     // OK button
     Button passwordChangeBtn = new Button("Change Password");
-    passwordChangeBtn.setMinWidth(200);
-    passwordChangeBtn.setOnAction(e -> changePassword(account, confirmUserInput, passwordInput,
-        newPasswordInput, confirmNewPasswordInput));
+    passwordChangeBtn.setOnAction(e -> changePassword(account));
     add(passwordChangeBtn, 0, 5);
 
     // cancel button
     Button cancelChangeBtn = new Button("Cancel");
-    cancelChangeBtn.setMinWidth(200);
     cancelChangeBtn.setOnAction(e -> modifyAccountMenu.showUpdateDeleteMenu(account));
     add(cancelChangeBtn, 1, 5);
   }
 
   // ~ Utility
 
-  private void changePassword(EmailAccount account, String confirmUserInput, String passwordInput,
-      String newPasswordInput, String confirmNewPasswordInput) {
+  private void changePassword(EmailAccount account) {
+    String confirmUserInput = changePWUsername.getText();
+    String passwordInput = changePWExisting.getText();
+    String newPasswordInput = changePWNew.getText();
+    String confirmNewPasswordInput = changePWConfirmNew.getText();
 
     // - confirm intent
     Alert confirmAlert = new Alert(AlertType.CONFIRMATION);

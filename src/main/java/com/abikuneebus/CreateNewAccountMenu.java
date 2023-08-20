@@ -52,6 +52,11 @@ public class CreateNewAccountMenu extends GridPane {
     add(departmentLbl, 0, 2);
     add(departmentCmbo, 1, 2);
 
+    // cancel button
+    Button cancelBtn = new Button("Cancel");
+    cancelBtn.setOnAction(e -> emailApp.showStartMenu());
+    add(cancelBtn, 0, 3);
+
     // create account button
     Button createAccountBtn = new Button("Create Account");
     createAccountBtn.setOnAction(e -> {
