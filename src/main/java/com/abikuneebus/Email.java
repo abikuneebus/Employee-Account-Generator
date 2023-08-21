@@ -31,7 +31,9 @@ public class Email extends GridPane {
 
   public Email(String firstName, String lastName, String department) {
     getChildren().clear();
-    setPrefSize(400, 300);
+    // setPrefSize(400, 300);
+    // setMinSize(400, 300);
+    // setMaxSize(400, 300);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
@@ -60,8 +62,12 @@ public class Email extends GridPane {
     Constants.initializeForbiddenSubstrings(this.firstName, this.lastName, this.department, this.companyName);
 
     // - proposed username construction
-    String proposedUsername = String.format("%s%s", this.firstName.toLowerCase(),
-        capitalizeFirstLetter(this.lastName.toLowerCase()));
+    // removing whitespace from both names
+    String firstNameNoWhitespace = this.firstName.replace(" ", "");
+    String lastNameNoWhitespace = this.lastName.replace(" ", "");
+
+    String proposedUsername = String.format("%s%s", firstNameNoWhitespace.toLowerCase(),
+        capitalizeFirstLetter(lastNameNoWhitespace.toLowerCase()));
 
     // • proposed username validation
     String validUserTry = isUsernameValid(proposedUsername);

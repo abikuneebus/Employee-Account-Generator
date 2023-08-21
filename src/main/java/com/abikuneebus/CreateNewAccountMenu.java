@@ -1,5 +1,6 @@
 package com.abikuneebus;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -9,6 +10,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
 
 public class CreateNewAccountMenu extends GridPane {
   private DatabaseManager dbManager;
@@ -21,25 +25,32 @@ public class CreateNewAccountMenu extends GridPane {
   }
 
   private void initUI() {
+    getChildren().clear();
+    // setPrefSize(750, 350);
+    // setMinSize(750, 350);
+    // setMaxSize(750, 350);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    // first name
-    Label firstNameLbl = new Label("First Name:");
+    Text newAccountIntroText = new Text("Please enter user's information.");
+    newAccountIntroText.getStyleClass().add("main-intro-text");
+    add(newAccountIntroText, 0, 0, 2, 1);
+    setHalignment(newAccountIntroText, HPos.CENTER);
+
+    // - labels
+    add(new Label("First Name:"), 0, 1);
+    add(new Label("Last Name:"), 0, 2);
+    add(new Label("Department:"), 0, 3);
+
+    // - text fields
     TextField firstNameInput = new TextField();
-    add(firstNameLbl, 0, 0);
-    add(firstNameInput, 1, 0);
+    add(firstNameInput, 1, 1);
 
-    // last name
-    Label lastNameLbl = new Label("Last Name:");
     TextField lastNameInput = new TextField();
-    add(lastNameLbl, 0, 1);
-    add(lastNameInput, 1, 1);
+    add(lastNameInput, 1, 2);
 
-    // department
-    Label departmentLbl = new Label("Department:");
     ComboBox<String> departmentCmbo = new ComboBox<>();
     departmentCmbo.getItems().addAll(
         "Accounting",
@@ -49,16 +60,26 @@ public class CreateNewAccountMenu extends GridPane {
         "Sales",
         "N/A");
     departmentCmbo.getSelectionModel().select("N/A");
-    add(departmentLbl, 0, 2);
-    add(departmentCmbo, 1, 2);
+    add(departmentCmbo, 1, 3);
 
-    // cancel button
-    Button cancelBtn = new Button("Cancel");
-    cancelBtn.setOnAction(e -> emailApp.showStartMenu());
-    add(cancelBtn, 0, 3);
+    // - buttons
 
-    // create account button
+    HBox buttonsBox = new HBox();
+
+    // create account
     Button createAccountBtn = new Button("Create Account");
+
+    // cancel
+    Button cancelBtn = new Button("Cancel");
+
+    buttonsBox.getChildren().addAll(createAccountBtn, cancelBtn);
+    buttonsBox.setSpacing(10);
+    buttonsBox.setAlignment(Pos.CENTER);
+    HBox.setHgrow(createAccountBtn, Priority.ALWAYS);
+    HBox.setHgrow(cancelBtn, Priority.ALWAYS);
+
+    // - set actions
+
     createAccountBtn.setOnAction(e -> {
       String firstName = firstNameInput.getText();
       String lastName = lastNameInput.getText();
@@ -83,8 +104,9 @@ public class CreateNewAccountMenu extends GridPane {
       emailApp.showStartMenu();
     });
 
-    add(createAccountBtn, 1, 3);
+    cancelBtn.setOnAction(e -> emailApp.showStartMenu());
 
+    add(buttonsBox, 0, 4, 2, 1);
   }
 
   public void addAccount(Email email) {

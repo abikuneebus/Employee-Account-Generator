@@ -12,7 +12,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -45,56 +44,59 @@ public class ModifyAccountMenu extends GridPane {
   // * search menu
   private void showSearchMenu() {
     getChildren().clear();
-    setPrefSize(400, 300);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    // username input
-    Text enterUsername = new Text("Enter account's username:");
-    add(enterUsername, 0, 0);
+    Text findAccountIntroText = new Text("User Search");
+    findAccountIntroText.getStyleClass().add("main-intro-text");
+    add(findAccountIntroText, 0, 0, 2, 1);
+    setHalignment(findAccountIntroText, HPos.CENTER);
 
+    // - labels
+    add(new Label("Account's username:"), 0, 1);
+
+    // - text fields
     userInputField = new TextField();
-    userInputField.setPromptText("Enter Username");
-    add(userInputField, 1, 0);
-
-    // find account button
-    Button userSearchBtn = new Button("Find Account");
-    userSearchBtn.setOnAction(e -> findAccount());
-    add(userSearchBtn, 0, 1);
-
+    add(userInputField, 1, 1);
+    // enter key listener
     userInputField.setOnKeyPressed(e -> {
       if (e.getCode() == KeyCode.ENTER) {
         findAccount();
       }
     });
 
+    // - buttons
+    HBox buttonsBox = new HBox();
+
+    // find account button
+    Button userSearchBtn = new Button("Find Account");
+
     // back to main menu button
     Button backToMainMenuBtn = new Button("Back to Main Menu");
-    backToMainMenuBtn.setOnAction(e -> emailApp.showStartMenu());
-    add(backToMainMenuBtn, 1, 1);
 
+    buttonsBox.getChildren().addAll(userSearchBtn, backToMainMenuBtn);
+    buttonsBox.setSpacing(10);
+    buttonsBox.setAlignment(Pos.CENTER);
+    HBox.setHgrow(userSearchBtn, Priority.ALWAYS);
+    HBox.setHgrow(backToMainMenuBtn, Priority.ALWAYS);
+
+    // - set actions
+    userSearchBtn.setOnAction(e -> findAccount());
+    backToMainMenuBtn.setOnAction(e -> emailApp.showStartMenu());
+
+    add(buttonsBox, 0, 2, 2, 1);
   }
 
   // * allows modification of account details or deletion of account
 
   void showUpdateDeleteMenu(EmailAccount existingAccount) {
     getChildren().clear();
-    setPrefSize(750, 375);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
-
-    // column constraints
-    ColumnConstraints labelColumn = new ColumnConstraints(150, 150, Double.MAX_VALUE);
-    labelColumn.setHalignment(HPos.RIGHT);
-
-    ColumnConstraints textFieldColumn = new ColumnConstraints(300, 300, Double.MAX_VALUE);
-    textFieldColumn.setHgrow(Priority.ALWAYS);
-
-    getColumnConstraints().addAll(labelColumn, textFieldColumn);
 
     // - labels
     add(new Label("First Name:"), 0, 1);
@@ -104,10 +106,10 @@ public class ModifyAccountMenu extends GridPane {
     add(new Label("Mailbox Capacity:"), 0, 5);
 
     // - text fields
-    // TODO make '-fx-menu-intro-text' class
     Text modAccountIntroText = new Text("Modifying account of " + existingAccount.getUsername() + ".");
-    modAccountIntroText.setStyle("-fx-menu-intro-text");
-    add(modAccountIntroText, 1, 0, 2, 1);
+    modAccountIntroText.getStyleClass().add("main-intro-text");
+    add(modAccountIntroText, 0, 0, 2, 1);
+    setHalignment(modAccountIntroText, HPos.CENTER);
 
     firstNameField = new TextField(existingAccount.getFirstName()); // modifiable
     add(firstNameField, 1, 1);
@@ -117,12 +119,12 @@ public class ModifyAccountMenu extends GridPane {
 
     departmentText = new TextField(existingAccount.getDepartment()); // display only
     departmentText.setEditable(false);
-    departmentText.setStyle("-fx-display-textfield");
+    departmentText.getStyleClass().add("display-only-textfield");
     add(departmentText, 1, 3);
 
     emailText = new TextField(existingAccount.getEmail()); // display only
     emailText.setEditable(false);
-    emailText.setStyle("-fx-display-textfield");
+    emailText.getStyleClass().add("display-only-textfield");
     add(emailText, 1, 4);
 
     mailCapacityField = new TextField(String.valueOf(existingAccount.getMailCapacity())); // modifiable
@@ -151,7 +153,7 @@ public class ModifyAccountMenu extends GridPane {
     HBox.setHgrow(deleteAccountBtn, Priority.ALWAYS);
     HBox.setHgrow(homeBtn, Priority.ALWAYS);
 
-    // set actions
+    // - set actions
     updateAccountBtn.setOnAction(e -> updateAccount(existingAccount));
 
     changePasswordBtn.setOnAction(e -> {
@@ -218,7 +220,14 @@ public class ModifyAccountMenu extends GridPane {
       // get updated values from text fields
       String updatedFirstName = firstNameField.getText();
       String updatedLastName = lastNameField.getText();
-      int updatedMailCapacity = Integer.parseInt(mailCapacityField.getText());
+
+      // verify entered mail capacity is integer
+      Optional<Integer> updatedMailCapacityOpt = parseAndValidateMailCapacity(mailCapacityField.getText());
+      if (!updatedMailCapacityOpt.isPresent()) {
+        showUpdateDeleteMenu(existingAccount);
+        return;
+      }
+      int updatedMailCapacity = updatedMailCapacityOpt.get();
 
       String invalidFirstName = Email.isNameValid(updatedFirstName);
       String invalidLastName = Email.isNameValid(updatedLastName);
@@ -303,8 +312,22 @@ public class ModifyAccountMenu extends GridPane {
     }
   }
 
-  // * CREATE ALERTS
+  // * PARSE/VALIDATE MAIL CAPACITY INPUT
+  private Optional<Integer> parseAndValidateMailCapacity(String mailCapacityText) {
+    try {
+      int mailCapacity = Integer.parseInt(mailCapacityText);
+      String validationMsg = Email.isMailCapacityValid(mailCapacity);
+      if (validationMsg == null) {
+        return Optional.of(mailCapacity);
+      }
+      showErrorAlert("Input Error", "Invalid Entry", validationMsg);
+    } catch (NumberFormatException e) {
+      showErrorAlert("Input Error", "Invalid Entry", "Mailbox capacity must be a whole number.");
+    }
+    return Optional.empty();
+  }
 
+  // * CREATE ALERTS
   private void showErrorAlert(String title, String header, String content) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(title);

@@ -1,9 +1,13 @@
 package com.abikuneebus;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
 
 public class StartMenu extends GridPane {
 
@@ -23,17 +27,31 @@ public class StartMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    // ↓ after username & password
+    Text mainIntroText = new Text("Please Select an Action");
+    mainIntroText.getStyleClass().add("menu-intro-text");
+    add(mainIntroText, 0, 0, 2, 1);
+
+    setHalignment(mainIntroText, HPos.CENTER);
+
+    // - buttons
+    HBox buttonsBox = new HBox();
+
     // new account menu
-    Button btnCreateAccount = new Button("Create New Account");
-    btnCreateAccount.setOnAction(e -> emailApp.showCreateAccountMenu());
+    Button createAccountBtn = new Button("Create New Account");
 
     // modify account menu
-    Button btnModifyAccount = new Button("Modify Existing Account");
-    btnModifyAccount.setOnAction(e -> emailApp.showModifyAccountMenu());
+    Button modifyAccountBtn = new Button("Modify Existing Account");
 
-    // adding buttons to layout
-    add(btnCreateAccount, 0, 0);
-    add(btnModifyAccount, 0, 1);
+    buttonsBox.getChildren().addAll(createAccountBtn, modifyAccountBtn);
+    buttonsBox.setSpacing(10);
+    buttonsBox.setAlignment(Pos.CENTER);
+    HBox.setHgrow(createAccountBtn, Priority.ALWAYS);
+    HBox.setHgrow(modifyAccountBtn, Priority.ALWAYS);
+
+    // - set actions
+    createAccountBtn.setOnAction(e -> emailApp.showCreateAccountMenu());
+    modifyAccountBtn.setOnAction(e -> emailApp.showModifyAccountMenu());
+
+    add(buttonsBox, 0, 2, 2, 1);
   }
 }
