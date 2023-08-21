@@ -1,1 +1,60 @@
-/* buttons */
+.root {
+  -fx-font-family: "Open Sans", "Arial";
+  -fx-font-size: 14px;
+  -fx-background-color: #b4b4b4ec;
+}
+
+.grid-pane {
+  -fx-padding: 20px;
+  -fx-hgap: 10px;
+  -fx-vgap: 10px;
+  -fx-alignment: center;
+}
+
+.button {
+  -fx-background-color: #4f87b6;
+  -fx-text-fill: white;
+  -fx-padding: 10px 20px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+  -fx-min-width: 150px;
+}
+
+.button:hover {
+  -fx-background-color: #4a6a85;
+}
+
+.text-field {
+  -fx-padding: 5px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+  -fx-background-color: white;
+}
+
+.menu-intro-text {
+  -fx-font-size: 16px;
+}
+
+.display-only-textfield {
+  color: #434343;
+  font-style: italic;
+  -fx-border-color: transparent;
+  -fx-opacity: 90%;
+}
+
+.label,
+.text {
+  -fx-font-weight: bold;
+}
+
+.margin-right {
+  -fx-margin-right: 10px;
+}
+
+.margin-left {
+  -fx-margin-left: 10px;
+}
+
+.margin-bottom {
+  -fx-margin-bottom: 10px;
+}
