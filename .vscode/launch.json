@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug (Launch)",
+      "request": "launch",
+      "mainClass": "com.abikuneebus.EmailApp",
+      "projectName": "accountgen",
+      "args": "",
+      "stopOnEntry": false,
+      "console": "internalConsole"
+    },
+    {
+      "type": "java",
+      "name": "Debug (Attach) - Remote",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 8000
+    }
+  ]
+}

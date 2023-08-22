@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
 public class PasswordChangeMenu extends GridPane {
   // declare instance variables
   private EmailAccount account;
+  private EmailApp emailApp;
   private ModifyAccountMenu modifyAccountMenu;
 
   // showChangePasswordMenu()
@@ -31,6 +32,7 @@ public class PasswordChangeMenu extends GridPane {
 
   public PasswordChangeMenu(EmailApp emailApp, EmailAccount account, ModifyAccountMenu modifyAccountMenu) {
     this.account = account;
+    this.emailApp = emailApp;
     this.modifyAccountMenu = modifyAccountMenu;
 
     // initializing UI
@@ -97,13 +99,26 @@ public class PasswordChangeMenu extends GridPane {
 
     // - set actions
     passwordChangeBtn.setOnAction(e -> changePassword(account));
-    cancelChangeBtn.setOnAction(e -> modifyAccountMenu.showUpdateDeleteMenu(account));
+    cancelChangeBtn.setOnAction(e -> returnToUpdateDelete(account));
 
     add(buttonsBox, 0, 4, 2, 1);
   }
 
   // ~ Utility
 
+  // * RETURN TO UPDATE/DELETE MENU
+  private void returnToUpdateDelete(EmailAccount account) {
+    // Check if modifyAccountMenu is not null
+    if (modifyAccountMenu != null) {
+      emailApp.showModifyAccountMenu();
+      modifyAccountMenu.showUpdateDeleteMenu(account);
+    } else {
+      // Debug statement if modifyAccountMenu is null
+      System.out.println("modifyAccountMenu is null");
+    }
+  }
+
+  // * CHANGE PASSWORD
   private void changePassword(EmailAccount account) {
     String confirmUserInput = changePWUsername.getText();
     String newPasswordInput = changePWNew.getText();

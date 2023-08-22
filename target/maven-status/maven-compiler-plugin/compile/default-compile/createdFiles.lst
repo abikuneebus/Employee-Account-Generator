@@ -1,5 +1,4 @@
 com\abikuneebus\EmailApp.class
-com\abikuneebus\App.class
 com\abikuneebus\EmailAccount.class
 com\abikuneebus\ModifyAccountMenu.class
 com\abikuneebus\Constants.class
