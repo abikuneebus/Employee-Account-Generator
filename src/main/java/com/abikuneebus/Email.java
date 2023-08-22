@@ -170,16 +170,12 @@ public class Email extends GridPane {
   }
 
   private void showNameErrorDialog(String errorMessage) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("Name Error");
-    alert.setHeaderText(null);
-    alert.setContentText(errorMessage);
-    alert.showAndWait();
+    AlertUtils.showAlert(Alert.AlertType.ERROR, "Validation", null, errorMessage);
   }
 
   // - duplicate username check
   public boolean isUsernameTaken(String username) {
-    DatabaseManager dbManager = new DatabaseManager();
+    DatabaseManager dbManager = DatabaseManager.getInstance();
     dbManager.connect();
     boolean isTaken = dbManager.isUsernameTaken(username);
     dbManager.disconnect();
@@ -189,7 +185,7 @@ public class Email extends GridPane {
   // - username validation
   public String isUsernameValid(String username) {
     // checking database
-    DatabaseManager dbManager = new DatabaseManager();
+    DatabaseManager dbManager = DatabaseManager.getInstance();
     dbManager.connect();
     boolean isDuplicate = dbManager.isUsernameTaken(username);
     dbManager.disconnect();
@@ -262,12 +258,7 @@ public class Email extends GridPane {
           // continue loop if given username invalid
         } catch (IllegalArgumentException ex) {
           // display error dialog
-          Alert alert = new Alert(Alert.AlertType.ERROR);
-          alert.setTitle("Error");
-          alert.setHeaderText(null);
-          alert.setContentText(ex.getMessage());
-          alert.showAndWait();
-
+          AlertUtils.showAlert(Alert.AlertType.ERROR, "Validation", null, ex.getMessage());
         }
       } else {
         // user chooses to cancel

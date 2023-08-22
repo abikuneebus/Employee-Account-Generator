@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,6 +15,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -68,27 +71,40 @@ public class PasswordChangeMenu extends GridPane {
     add(new Label("Password"), 0, 2);
     add(new Label("Confirm Password"), 0, 3);
 
-    // - text fields
+    // - defining text fields
     // username
     changePWUsername = new TextField();
-    add(changePWUsername, 1, 1);
-
     // new password
     changePWNew = new PasswordField();
-    add(changePWNew, 1, 2);
-
     // new password confirmation
     changePWConfirmNew = new PasswordField();
+
+    // - all fields listen for Enter
+    EventHandler<KeyEvent> enterKeyListener = e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        changePassword(account);
+      }
+    };
+    changePWUsername.setOnKeyPressed(enterKeyListener);
+    changePWNew.setOnKeyPressed(enterKeyListener);
+    changePWConfirmNew.setOnKeyPressed(enterKeyListener);
+
+    // - adding text fields
+    add(changePWUsername, 1, 1);
+    add(changePWNew, 1, 2);
     add(changePWConfirmNew, 1, 3);
 
     // - buttons
-
     HBox buttonsBox = new HBox();
 
-    // OK button
+    // 'OK'
     Button passwordChangeBtn = new Button("Change Password");
 
-    // cancel button
+    // disable if any fields are empty
+    passwordChangeBtn.disableProperty().bind(changePWUsername.textProperty().isEmpty()
+        .or(changePWNew.textProperty().isEmpty()).or(changePWConfirmNew.textProperty().isEmpty()));
+
+    // 'cancel'
     Button cancelChangeBtn = new Button("Cancel");
 
     buttonsBox.getChildren().addAll(passwordChangeBtn, cancelChangeBtn);
@@ -125,20 +141,13 @@ public class PasswordChangeMenu extends GridPane {
     String confirmNewPasswordInput = changePWConfirmNew.getText();
 
     // - confirm intent
-    Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
-    confirmAlert.setTitle("Confirmation");
-    confirmAlert.setHeaderText("Password Change");
-    confirmAlert.setContentText("Are you sure you want to change your password?");
-
     ButtonType btnYes = new ButtonType("Yes");
     ButtonType btnNo = new ButtonType("No");
-
-    confirmAlert.getButtonTypes().setAll(btnYes, btnNo);
-
-    Optional<ButtonType> result = confirmAlert.showAndWait();
+    Optional<ButtonType> result = AlertUtils.showCustomConfirmAlert("Change Password", "Confirmation",
+        "Are you sure you want to change your password?", btnYes, btnNo);
 
     // user confirms intent
-    if (result.get() == btnYes) {
+    if (result.isPresent() && result.get() == btnYes) {
 
       // check for empty fields
       if (confirmUserInput.isEmpty() || newPasswordInput.isEmpty()
@@ -154,11 +163,7 @@ public class PasswordChangeMenu extends GridPane {
       // if not identical
       if (!(newPasswordInput.equals(confirmNewPasswordInput))) {
         // show alert
-        Alert mismatchAlert = new Alert(Alert.AlertType.ERROR);
-        mismatchAlert.setTitle("Input Error");
-        mismatchAlert.setContentText(
-            "Entered new password value and new password confirmation value do not match! Please try again, entering the same value for both fields.");
-        mismatchAlert.showAndWait();
+        AlertUtils.showAlert(AlertType.ERROR, "Validation", newPasswordInput, "Please ensure both passwords match!");
       }
 
       // - new password input validation
@@ -169,10 +174,7 @@ public class PasswordChangeMenu extends GridPane {
 
       // if invalid, display alert with explanation
       if (passwordValidationResult != null) {
-        Alert invalidAlert = new Alert(Alert.AlertType.ERROR);
-        invalidAlert.setTitle("Invalid Password");
-        invalidAlert.setContentText(passwordValidationResult);
-        invalidAlert.showAndWait();
+        AlertUtils.showAlert(AlertType.ERROR, "Validation", "Invalid Password", passwordValidationResult);
       }
 
       // - update password
@@ -184,14 +186,15 @@ public class PasswordChangeMenu extends GridPane {
           hashedPassword);
 
       // updating database
-      DatabaseManager dbManager = new DatabaseManager();
+      DatabaseManager dbManager = DatabaseManager.getInstance();
       dbManager.connect();
       dbManager.updatePassword(updatedAccount);
       dbManager.disconnect();
 
       // if user selects 'No', close dialog
     } else {
-      confirmAlert.getDialogPane().getScene().getWindow().hide();
+      AlertUtils.showInfoAlert("Password Change", "Cancelled", "Password change cancelled!");
+      modifyAccountMenu.showUpdateDeleteMenu(account);
     }
 
   }

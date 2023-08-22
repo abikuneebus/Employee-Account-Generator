@@ -12,7 +12,6 @@ public class DatabaseManager {
   private Connection connection;
   private static DatabaseManager instance;
 
-  // TODO refactor all connections to use 'instance'
   // • singleton pattern
   public static DatabaseManager getInstance() {
     if (instance == null) {
@@ -206,7 +205,7 @@ public class DatabaseManager {
     return null;
   }
 
-  // • check password
+  // • getting hashed password
   public String getHashedPassword(String username) {
     String sql = "SELECT hashedPassword FROM email_accounts WHERE username = ?";
 
@@ -221,7 +220,7 @@ public class DatabaseManager {
       e.printStackTrace();
     }
 
-    return null; // Username not found
+    return null;
   }
 
   // • updating password

@@ -133,7 +133,6 @@ public class ModifyAccountMenu extends GridPane {
     // - buttons
     HBox buttonsBox = new HBox();
 
-    // updates all values in database
     Button updateAccountBtn = new Button("Update Account");
 
     // to change password menu
@@ -159,6 +158,14 @@ public class ModifyAccountMenu extends GridPane {
     changePasswordBtn.setOnAction(e -> {
       passwordChangeMenu.showChangePasswordMenu();
       emailApp.showPasswordChangeMenu(passwordChangeMenu);
+
+      // 'Enter' = 'Update Account' button press
+      this.setOnKeyPressed(event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+          updateAccount(existingAccount);
+        }
+      });
+
     });
 
     deleteAccountBtn.setOnAction(e -> deleteAccount(existingAccount));
@@ -178,22 +185,24 @@ public class ModifyAccountMenu extends GridPane {
     String validationMsg = Email.isNameValid(usernameInput);
 
     if (usernameInput.isEmpty()) {
-      showErrorAlert("Required Field", "Missing Information", "Username Required!");
+      AlertUtils.showWarnAlert("Required Field", "Missing Information", "Username Required!");
       return;
     }
 
     if (validationMsg != null) {
-      showErrorAlert("Input Error", "Invalid Entry", validationMsg);
+      AlertUtils.showWarnAlert("Input Error", "Invalid Entry", validationMsg);
       return;
     }
 
     // populating form with account details if account exists
-    DatabaseManager dbManager = new DatabaseManager();
+    DatabaseManager dbManager = DatabaseManager.getInstance();
     dbManager.connect();
     EmailAccount account = dbManager.getAccountByUsername(usernameInput);
+    dbManager.disconnect();
     if (account == null) {
-      Alert alert = new Alert(Alert.AlertType.ERROR, "Username not found!");
-      alert.showAndWait();
+
+      AlertUtils.showAlert(Alert.AlertType.ERROR, "User Search", "Not Found",
+          "Sorry, " + usernameInput + " not found.");
     }
     passwordChangeMenu.setAccount(account);
     passwordChangeMenu.showChangePasswordMenu();
@@ -202,20 +211,15 @@ public class ModifyAccountMenu extends GridPane {
 
   // * UPDATE ACCOUNT DETAILS
   private void updateAccount(EmailAccount existingAccount) {
-
+    String alertMsgUsername = existingAccount.getUsername();
     // confirm intent
-    Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
-    confirmAlert.setTitle("Confirmation");
-    confirmAlert.setHeaderText("Update Account");
-    confirmAlert.setContentText("Update all fields with form input values?");
 
     ButtonType btnYes = new ButtonType("Yes");
     ButtonType btnNo = new ButtonType("No");
+    Optional<ButtonType> result = AlertUtils.showCustomConfirmAlert("Update Account", "Confirmation",
+        "Update account of " + alertMsgUsername + "?", btnYes, btnNo);
 
-    confirmAlert.getButtonTypes().setAll(btnYes, btnNo);
-
-    Optional<ButtonType> result = confirmAlert.showAndWait();
-    if (result.get() == btnYes) {
+    if (result.isPresent() && result.get() == btnYes) {
 
       // get updated values from text fields
       String updatedFirstName = firstNameField.getText();
@@ -234,13 +238,13 @@ public class ModifyAccountMenu extends GridPane {
       String invalidMailCapacity = Email.isMailCapacityValid(updatedMailCapacity);
 
       if (!(invalidFirstName == null)) {
-        showErrorAlert("Input Error", "Invalid Entry", invalidFirstName);
+        AlertUtils.showErrAlert("Input Error", "Invalid Entry", invalidFirstName);
 
       } else if (!(invalidLastName == null)) {
-        showErrorAlert("Input Error", "Invalid Entry", invalidLastName);
+        AlertUtils.showErrAlert("Input Error", "Invalid Entry", invalidLastName);
 
       } else if (!(invalidMailCapacity == null)) {
-        showErrorAlert("Input Error", "Invalid Entry", invalidMailCapacity);
+        AlertUtils.showErrAlert("Input Error", "Invalid Entry", invalidMailCapacity);
 
       } else {
 
@@ -250,7 +254,7 @@ public class ModifyAccountMenu extends GridPane {
             existingAccount.getHashedPassword());
 
         // update account in database
-        DatabaseManager dbManager = new DatabaseManager();
+        DatabaseManager dbManager = DatabaseManager.getInstance();
         dbManager.connect();
         dbManager.updateAccount(updatedAccount);
         dbManager.disconnect();
@@ -258,33 +262,25 @@ public class ModifyAccountMenu extends GridPane {
         // return to home menu
         emailApp.showStartMenu();
       }
-    } else {
-      // close dialog
-      confirmAlert.getDialogPane().getScene().getWindow().hide();
-
-    }
+    } else
+      AlertUtils.showInfoAlert("Update Account", "Cancelled", "Account update cancelled!");
+    showUpdateDeleteMenu(existingAccount);
 
   }
 
   // * DELETE ACCOUNT
   private void deleteAccount(EmailAccount account) {
-    // confirm intent
-    Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
-    confirmAlert.setTitle("Confirmation");
-    confirmAlert.setHeaderText("Delete Account");
-    confirmAlert.setContentText("Are you sure you want to delete this account?");
+    String alertMsgUsername = account.getUsername();
 
     ButtonType btnYes = new ButtonType("Yes");
     ButtonType btnNo = new ButtonType("No");
+    Optional<ButtonType> result = AlertUtils.showCustomConfirmAlert("Delete Account", "Confirmation",
+        "Delete account of " + alertMsgUsername + "?", btnYes, btnNo);
 
-    confirmAlert.getButtonTypes().setAll(btnYes, btnNo);
-
-    Optional<ButtonType> result = confirmAlert.showAndWait();
-    // if user confirms account deletion request ("Yes")
-    if (result.get() == btnYes) {
+    if (result.isPresent() && result.get() == btnYes) {
 
       // deleting account
-      DatabaseManager dbManager = new DatabaseManager();
+      DatabaseManager dbManager = DatabaseManager.getInstance();
       dbManager.connect();
       boolean successfulDelete = dbManager.deleteAccount(account.getEmail());
       dbManager.disconnect();
@@ -292,22 +288,23 @@ public class ModifyAccountMenu extends GridPane {
       if (successfulDelete) {
 
         // showing successful deletion confirmation
-        Alert successAlert = new Alert(AlertType.INFORMATION, "Account deleted.");
-        successAlert.showAndWait();
+        AlertUtils.showAlert(AlertType.INFORMATION, "Delete Account", "Success",
+            "Account of " + alertMsgUsername + " deleted.");
 
         // returning to home menu
         emailApp.showStartMenu();
 
       } else {
         // showing error message
-        Alert deleteErrorAlert = new Alert(AlertType.ERROR, "Error deleting account, returning to home menu.");
-        deleteErrorAlert.showAndWait();
+        AlertUtils.showAlert(AlertType.ERROR, "Delete Account", "Failure",
+            "Error deleting account of " + alertMsgUsername + ", please try again.");
 
         // returning to home menu
         emailApp.showStartMenu();
       }
     } else {
       // if user does not want to proceed with account deletion ("No")
+      AlertUtils.showInfoAlert("Delete Account", "Cancelled", "Account deletion cancelled!");
       showUpdateDeleteMenu(account);
     }
   }
@@ -320,20 +317,11 @@ public class ModifyAccountMenu extends GridPane {
       if (validationMsg == null) {
         return Optional.of(mailCapacity);
       }
-      showErrorAlert("Input Error", "Invalid Entry", validationMsg);
+      AlertUtils.showErrAlert("Input Error", "Invalid Entry", validationMsg);
     } catch (NumberFormatException e) {
-      showErrorAlert("Input Error", "Invalid Entry", "Mailbox capacity must be a whole number.");
+      AlertUtils.showErrAlert("Input Error", "Invalid Entry", "Mailbox capacity must be a whole number.");
     }
     return Optional.empty();
-  }
-
-  // * CREATE ALERTS
-  private void showErrorAlert(String title, String header, String content) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(header);
-    alert.setContentText(content);
-    alert.showAndWait();
   }
 
 }

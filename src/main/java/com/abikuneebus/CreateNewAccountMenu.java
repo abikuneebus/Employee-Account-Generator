@@ -3,7 +3,6 @@ package com.abikuneebus;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -86,11 +85,8 @@ public class CreateNewAccountMenu extends GridPane {
       String department = departmentCmbo.getSelectionModel().getSelectedItem().toString();
 
       if (firstName.isEmpty() || lastName.isEmpty() || department == null || department.isEmpty()) {
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Input Error");
-        alert.setHeaderText("Missing Information");
-        alert.setContentText("All fields required!");
-        alert.showAndWait();
+        AlertUtils.showAlert(AlertType.WARNING, "Input Error", "Missing Information", "All fields required!");
+
         return;
       }
 
@@ -113,7 +109,7 @@ public class CreateNewAccountMenu extends GridPane {
     EmailAccount account = new EmailAccount(email.getFirstName(), email.getLastName(), email.getEmail(),
         email.getMailCapacity(), email.getDepartment(), email.getUsername(), email.getHashedPassword());
 
-    dbManager = new DatabaseManager();
+    dbManager = DatabaseManager.getInstance();
     dbManager.connect();
     dbManager.insertEmailAccount(account);
     dbManager.disconnect();
