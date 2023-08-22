@@ -10,6 +10,20 @@ import java.sql.Statement;
 public class DatabaseManager {
   private static final String DATABASE_URL = "jdbc:sqlite:C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
   private Connection connection;
+  private static DatabaseManager instance;
+
+  // TODO refactor all connections to use 'instance'
+  // • singleton pattern
+  public static DatabaseManager getInstance() {
+    if (instance == null) {
+      synchronized (DatabaseManager.class) {
+        if (instance == null) {
+          instance = new DatabaseManager();
+        }
+      }
+    }
+    return instance;
+  }
 
   // • create table
   public void createTable() {
@@ -190,6 +204,24 @@ public class DatabaseManager {
     }
 
     return null;
+  }
+
+  // • check password
+  public String getHashedPassword(String username) {
+    String sql = "SELECT hashedPassword FROM email_accounts WHERE username = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+      pstmt.setString(1, username);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          return rs.getString("hashedPassword");
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null; // Username not found
   }
 
   // • updating password
