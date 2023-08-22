@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 public class EmailApp extends Application {
   public static List<EmailAccount> accounts = new ArrayList<>();
   private Stage primaryStage; // reference to primary stage
+  private boolean isLoggedIn = false;
 
   public static void main(String[] args) {
     launch(args);
@@ -22,14 +23,20 @@ public class EmailApp extends Application {
   }
 
   public void showStartMenu() {
-    StartMenu startMenu = new StartMenu(this);
-    Scene scene = new Scene(startMenu, 750, 375);
-    primaryStage.setResizable(false);
-    scene.getStylesheets()
-        .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
-    primaryStage.setTitle("Email App");
-    primaryStage.setScene(scene);
-    primaryStage.show();
+    // bypass login screen if logged in
+    if (isLoggedIn) {
+      StartMenu startMenu = new StartMenu(this);
+      startMenu.addOrModMenu();
+    } else {
+      StartMenu startMenu = new StartMenu(this);
+      Scene scene = new Scene(startMenu, 750, 375);
+      primaryStage.setResizable(false);
+      scene.getStylesheets()
+          .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
+      primaryStage.setTitle("Email App");
+      primaryStage.setScene(scene);
+      primaryStage.show();
+    }
   }
 
   public void showCreateAccountMenu() {
@@ -70,6 +77,11 @@ public class EmailApp extends Application {
     primaryStage.setTitle("Change Password");
     primaryStage.setScene(scene);
     primaryStage.show();
+  }
+
+  // set login flag
+  public void setIsLoggedIn(boolean isLoggedIn) {
+    this.isLoggedIn = isLoggedIn;
   }
 
 }

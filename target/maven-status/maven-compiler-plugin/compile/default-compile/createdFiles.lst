@@ -1,6 +1,7 @@
 com\abikuneebus\EmailApp.class
 com\abikuneebus\EmailAccount.class
 com\abikuneebus\ModifyAccountMenu.class
+com\abikuneebus\AlertUtils.class
 com\abikuneebus\Constants.class
 com\abikuneebus\PasswordChangeMenu.class
 com\abikuneebus\DatabaseManager.class
