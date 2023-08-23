@@ -88,7 +88,6 @@ public class DatabaseManager {
       pstmt.setString(6, emailAccount.getHashedPassword());
       pstmt.setInt(7, emailAccount.getMailCapacity());
 
-      // executes prepared statement, inserting data
       pstmt.executeUpdate();
 
     } catch (SQLException e) {
@@ -101,7 +100,7 @@ public class DatabaseManager {
     String sql = "SELECT firstName,lastName,department,email,username,hashedPassword, mailboxCapacity FROM email_accounts WHERE email = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setString(1, emailAccount.getEmail()); // WHERE email = ?
+      pstmt.setString(1, emailAccount.getEmail());
 
       try (ResultSet resultSet = pstmt.executeQuery()) {
 

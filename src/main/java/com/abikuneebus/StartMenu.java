@@ -30,7 +30,6 @@ public class StartMenu extends GridPane {
     initUI();
   }
 
-  // TODO center 'loginText' & both buttons
   // initializing UI elements for start menu
   private void initUI() {
     setAlignment(Pos.CENTER);
@@ -38,11 +37,10 @@ public class StartMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    System.out.println(BCrypt.hashpw(new String("BypassedStrengthReqs"), BCrypt.gensalt()));
-
-    Text loginText = new Text("Please Log In");
+    Text loginText = new Text("Log In");
     loginText.getStyleClass().add("menu-intro-text");
     add(loginText, 0, 0, 2, 1);
+    setHalignment(loginText, HPos.CENTER);
 
     // - labels
     add(new Label("Username:"), 0, 1);
@@ -68,7 +66,9 @@ public class StartMenu extends GridPane {
 
     // - buttons
     Button loginBtn = new Button("Login");
-    add(loginBtn, 0, 3, 2, 1);
+    HBox loginBtnBox = new HBox(loginBtn);
+    loginBtnBox.setAlignment(Pos.CENTER);
+    add(loginBtnBox, 0, 3, 2, 1);
 
     // - set action
     loginBtn.setOnAction(e -> {
@@ -78,7 +78,6 @@ public class StartMenu extends GridPane {
   }
 
   GridPane addOrModMenu() {
-    System.out.println("addOrModMenu called."); // ! debug
     getChildren().clear();
     setAlignment(Pos.CENTER);
     setHgap(10);

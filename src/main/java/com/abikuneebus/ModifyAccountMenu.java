@@ -21,7 +21,7 @@ import javafx.scene.text.Text;
 
 public class ModifyAccountMenu extends GridPane {
   private EmailApp emailApp;
-  private PasswordChangeMenu passwordChangeMenu;
+  // private PasswordChangeMenu passwordChangeMenu;
 
   // update/delete menu
   private TextField userInputField;
@@ -33,10 +33,10 @@ public class ModifyAccountMenu extends GridPane {
 
   // * MENUS
 
-  public ModifyAccountMenu(EmailApp emailApp, PasswordChangeMenu passwordChangeMenu) {
+  public ModifyAccountMenu(EmailApp emailApp /* , PasswordChangeMenu passwordChangeMenu */) {
 
     this.emailApp = emailApp;
-    this.passwordChangeMenu = passwordChangeMenu;
+    // this.passwordChangeMenu = passwordChangeMenu;
 
     showSearchMenu();
   }
@@ -86,7 +86,6 @@ public class ModifyAccountMenu extends GridPane {
     userSearchBtn.setOnAction(e -> findAccount());
     backToMainMenuBtn.setOnAction(e -> {
       System.out.println("Back to Main Menu button clicked.");
-      passwordChangeMenu.resetAccount();
       if (emailApp != null) {
         emailApp.showStartMenu();
       } else
@@ -212,8 +211,8 @@ public class ModifyAccountMenu extends GridPane {
           "Sorry, " + usernameInput + " not found.");
       return;
     }
-    passwordChangeMenu.setAccount(account);
-    passwordChangeMenu.showChangePasswordMenu();
+    // passwordChangeMenu.setAccount(account);
+    // passwordChangeMenu.showChangePasswordMenu();
     showUpdateDeleteMenu(account);
   }
 
@@ -331,9 +330,9 @@ public class ModifyAccountMenu extends GridPane {
     }
     return Optional.empty();
   }
-
-  public void setPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
-    this.passwordChangeMenu = passwordChangeMenu;
-  }
+  //
+  // public void setPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
+  // this.passwordChangeMenu = passwordChangeMenu;
+  // }
 
 }

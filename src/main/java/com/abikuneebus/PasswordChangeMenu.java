@@ -14,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -28,8 +27,8 @@ public class PasswordChangeMenu extends GridPane {
   private EmailApp emailApp;
 
   // showChangePasswordMenu()
-  private TextField changePWNew;
-  private TextField changePWConfirmNew;
+  private PasswordField changePWNew;
+  private PasswordField changePWConfirmNew;
 
   public PasswordChangeMenu(EmailApp emailApp, EmailAccount account) {
     this.account = account;
@@ -47,6 +46,14 @@ public class PasswordChangeMenu extends GridPane {
 
   // ~ Password Change Menu
   void showChangePasswordMenu() {
+
+    if (changePWNew != null) {
+      changePWNew.setText("");
+    }
+    if (changePWConfirmNew != null) {
+      changePWConfirmNew.setText("");
+    }
+
     getChildren().clear();
     setAlignment(Pos.CENTER);
     setHgap(10);
@@ -176,6 +183,7 @@ public class PasswordChangeMenu extends GridPane {
       dbManager.updatePassword(updatedAccount);
       dbManager.disconnect();
       returnToUpdateDelete(updatedAccount);
+      clearForm();
 
       // if user selects 'No', close dialog
     } else {
@@ -183,18 +191,16 @@ public class PasswordChangeMenu extends GridPane {
       clearForm();
       return;
     }
-
   }
 
   // clearing state
-  private void clearForm() {
-    changePWNew.setText("");
-    changePWConfirmNew.setText("");
-  }
-
-  public void resetAccount() {
-    this.account = null;
-    showChangePasswordMenu();
+  void clearForm() {
+    if (changePWNew != null) {
+      changePWNew.setText("");
+    }
+    if (changePWConfirmNew != null) {
+      changePWConfirmNew.setText("");
+    }
   }
 
 }

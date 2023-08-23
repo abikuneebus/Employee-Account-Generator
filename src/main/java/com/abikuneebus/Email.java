@@ -31,9 +31,6 @@ public class Email extends GridPane {
 
   public Email(String firstName, String lastName, String department) {
     getChildren().clear();
-    // setPrefSize(400, 300);
-    // setMinSize(400, 300);
-    // setMaxSize(400, 300);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
