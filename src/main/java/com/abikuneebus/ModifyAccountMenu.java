@@ -50,7 +50,7 @@ public class ModifyAccountMenu extends GridPane {
     setPadding(new Insets(20, 10, 10, 10));
 
     Text findAccountIntroText = new Text("User Search");
-    findAccountIntroText.getStyleClass().add("main-intro-text");
+    findAccountIntroText.getStyleClass().add("menu-intro-text");
     add(findAccountIntroText, 0, 0, 2, 1);
     setHalignment(findAccountIntroText, HPos.CENTER);
 
@@ -112,8 +112,8 @@ public class ModifyAccountMenu extends GridPane {
     add(new Label("Mailbox Capacity:"), 0, 5);
 
     // - text fields
-    Text modAccountIntroText = new Text("Modifying account of " + existingAccount.getUsername() + ".");
-    modAccountIntroText.getStyleClass().add("main-intro-text");
+    Text modAccountIntroText = new Text("Modifying Account of " + existingAccount.getUsername());
+    modAccountIntroText.getStyleClass().add("menu-intro-text");
     add(modAccountIntroText, 0, 0, 2, 1);
     setHalignment(modAccountIntroText, HPos.CENTER);
 

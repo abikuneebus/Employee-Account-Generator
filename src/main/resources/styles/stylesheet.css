@@ -1,7 +1,7 @@
 .root {
   -fx-font-family: "Open Sans", "Arial";
   -fx-font-size: 14px;
-  -fx-background-color: #b4b4b4ec;
+  -fx-background-color: #c0c0c0;
 }
 
 .grid-pane {
@@ -12,7 +12,7 @@
 }
 
 .button {
-  -fx-background-color: #4f87b6;
+  -fx-background-color: #89aed1;
   -fx-text-fill: white;
   -fx-padding: 10px 20px;
   -fx-border-radius: 5px;
@@ -21,18 +21,20 @@
 }
 
 .button:hover {
-  -fx-background-color: #4a6a85;
+  -fx-background-color: #708090;
 }
 
 .text-field {
   -fx-padding: 5px;
   -fx-border-radius: 5px;
   -fx-background-radius: 5px;
-  -fx-background-color: white;
+  -fx-background-color: #dcdcdc;
 }
 
 .menu-intro-text {
-  -fx-font-size: 16px;
+  -fx-font-size: 28px;
+  font-family: Verdana;
+  -fx-translate-y: -25px;
 }
 
 .display-only-textfield {
@@ -57,4 +59,18 @@
 
 .margin-bottom {
   -fx-margin-bottom: 10px;
+}
+
+.mini-text-area {
+  -fx-padding: 0;
+  -fx-font-size: 12px;
+  -fx-pref-row-count: 1;
+  -fx-text-alignment: center;
+}
+
+.read-only-field {
+  -fx-padding: 5px;
+  -fx-font-size: 12px;
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
 }

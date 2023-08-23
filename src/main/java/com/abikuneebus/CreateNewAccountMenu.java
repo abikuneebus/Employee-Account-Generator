@@ -30,8 +30,8 @@ public class CreateNewAccountMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text newAccountIntroText = new Text("Enter account's information.");
-    newAccountIntroText.getStyleClass().add("main-intro-text");
+    Text newAccountIntroText = new Text("Enter Account Information");
+    newAccountIntroText.getStyleClass().add("menu-intro-text");
     add(newAccountIntroText, 0, 0, 2, 1);
     setHalignment(newAccountIntroText, HPos.CENTER);
 

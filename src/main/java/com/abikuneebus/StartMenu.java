@@ -75,7 +75,9 @@ public class StartMenu extends GridPane {
     loginBtn.setOnAction(e -> {
       performLogin();
     });
-
+    if (emailApp.isLoggedIn == false) {
+      AlertUtils.showDemoAlert("FOR DEMO PURPOSES ONLY", "Copy To Clipboard", "ITAdmin", "Thank$F0rY0urTim3!");
+    }
   }
 
   GridPane addOrModMenu() {
@@ -85,7 +87,7 @@ public class StartMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text mainIntroText = new Text("Please Select an Action");
+    Text mainIntroText = new Text("Select an Action");
     mainIntroText.getStyleClass().add("menu-intro-text");
     add(mainIntroText, 0, 0, 2, 1);
 
@@ -94,7 +96,6 @@ public class StartMenu extends GridPane {
     // - buttons
     HBox buttonsBox = new HBox();
 
-    // TODO remove functionality: Enter key navigating to 'Create New Account'
     // new account menu
     Button createAccountBtn = new Button("Create New Account");
 

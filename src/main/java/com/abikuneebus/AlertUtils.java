@@ -6,6 +6,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 
 public class AlertUtils {
   // private constructor to prevent instantiation
@@ -60,6 +63,43 @@ public class AlertUtils {
     alert.setTitle(alertTitle);
     alert.setHeaderText(alertHeader);
     alert.setContentText(alertContent);
+    alert.showAndWait();
+  }
+
+  // ! for demo purposes only — this probably isn't the best security practice :)
+  // # on startup, shows dialog w/ copyable login crendentials
+  public static void showDemoAlert(String title, String headerText, String contentTextUser,
+      String contentTextPassword) {
+    Alert alert = new Alert(AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+
+    TextField textFieldUser = new TextField(contentTextUser);
+    textFieldUser.setEditable(false);
+    textFieldUser.setPrefHeight(15);
+    textFieldUser.setMaxHeight(15);
+    textFieldUser.getStyleClass().add("read-only-field");
+
+    TextField textFieldPassword = new TextField(contentTextPassword);
+    textFieldPassword.setEditable(false);
+    textFieldPassword.setPrefHeight(15);
+    textFieldPassword.setMaxHeight(15);
+    textFieldPassword.getStyleClass().add("read-only-field");
+
+    GridPane content = new GridPane();
+    content.setHgap(10);
+    content.setVgap(10);
+    content.setMinWidth(300);
+    content.setMaxHeight(100);
+    content.setMinHeight(100);
+
+    content.add(new Label("Username:"), 0, 0);
+    content.add(textFieldUser, 1, 0);
+    content.add(new Label("Password:"), 0, 1);
+    content.add(textFieldPassword, 1, 1);
+
+    alert.getDialogPane().getStylesheets().add("/styles/stylesheet.css");
+    alert.getDialogPane().setContent(content);
     alert.showAndWait();
   }
 
