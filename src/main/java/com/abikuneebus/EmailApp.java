@@ -5,12 +5,16 @@ import java.util.List;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class EmailApp extends Application {
   public static List<EmailAccount> accounts = new ArrayList<>();
   private Stage primaryStage; // reference to primary stage
   private boolean isLoggedIn = false;
+  private ModifyAccountMenu modifyAccountMenu;
+  private Scene updateDeleteScene;
+  private Scene passwordChangeScene;
 
   public static void main(String[] args) {
     launch(args);
@@ -23,11 +27,20 @@ public class EmailApp extends Application {
   }
 
   public void showStartMenu() {
-    // bypass login screen if logged in
+    System.out.println("showStartMenu called. isLoggedIn: " + isLoggedIn); // Debug log
+
+    System.out.println("showStartMenu called."); // Debug log
     if (isLoggedIn) {
+      System.out.println("isLoggedIn is true."); // Debug log
       StartMenu startMenu = new StartMenu(this);
-      startMenu.addOrModMenu();
+      GridPane gridPane = startMenu.addOrModMenu();
+      Scene scene = new Scene(gridPane, 750, 375);
+      primaryStage.setResizable(false);
+      scene.getStylesheets()
+          .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
+      primaryStage.setScene(scene);
     } else {
+      System.out.println("isLoggedIn is false."); // Debug log
       StartMenu startMenu = new StartMenu(this);
       Scene scene = new Scene(startMenu, 750, 375);
       primaryStage.setResizable(false);
@@ -52,12 +65,9 @@ public class EmailApp extends Application {
 
   public void showModifyAccountMenu() {
     // creating with null EmailAccount and ModifyAccountMenu initially
-    PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(this, null, null);
+    PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(this, null);
 
     ModifyAccountMenu modifyAccountMenu = new ModifyAccountMenu(this, passwordChangeMenu);
-
-    // setting modifyAccountMenu reference in passwordChangeMenu
-    passwordChangeMenu.setModifyAccountMenu(modifyAccountMenu);
 
     Scene scene = new Scene(modifyAccountMenu, 750, 375);
     primaryStage.setResizable(false);
@@ -69,13 +79,31 @@ public class EmailApp extends Application {
   }
 
   public void showPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
-    Scene scene = new Scene(passwordChangeMenu, 750, 375);
+    if (passwordChangeScene == null) {
+      passwordChangeScene = new Scene(passwordChangeMenu, 750, 375);
+      passwordChangeScene.getStylesheets()
+          .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
+    }
     primaryStage.setResizable(false);
-
-    scene.getStylesheets()
-        .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
     primaryStage.setTitle("Change Password");
-    primaryStage.setScene(scene);
+    primaryStage.setScene(passwordChangeScene);
+    primaryStage.show();
+  }
+
+  public void showUpdateDeleteMenu(EmailAccount account) {
+    if (modifyAccountMenu == null) {
+      PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(null, account);
+      modifyAccountMenu = new ModifyAccountMenu(this, passwordChangeMenu);
+    }
+    modifyAccountMenu.showUpdateDeleteMenu(account);
+    if (updateDeleteScene == null) {
+      updateDeleteScene = new Scene(modifyAccountMenu, 750, 375);
+      updateDeleteScene.getStylesheets()
+          .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
+    }
+    primaryStage.setResizable(false);
+    primaryStage.setTitle("Modify Existing Account");
+    primaryStage.setScene(updateDeleteScene);
     primaryStage.show();
   }
 

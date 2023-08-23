@@ -135,7 +135,7 @@ public class Email extends GridPane {
   }
 
   // - password validator
-  public String isPasswordValid(char[] password) {
+  public static String isPasswordValid(char[] password) {
     if (password.length < 12 || password.length > 32) {
       return "Password must be between 12 and 32 characters. ";
     }
@@ -162,7 +162,7 @@ public class Email extends GridPane {
   }
 
   // - email validation
-  public String isEmailValid(String username) {
+  public static String isEmailValid(String username) {
     if (!(username.matches("^(?!.*\\.\\.)(?!.*\\.$)(?!\\.)[a-zA-Z0-9.]{4,32}$"))) {
       return "Invalid email address, please try again using the following guidelines:\n- Between 4 and 32 characters\n- Contains only letters, numbers, and non-consecutive periods\n- Does not start or end with a period\n\nPlease enter a valid email:\n";
     }
@@ -183,7 +183,7 @@ public class Email extends GridPane {
   }
 
   // - username validation
-  public String isUsernameValid(String username) {
+  public static String isUsernameValid(String username) {
     // checking database
     DatabaseManager dbManager = DatabaseManager.getInstance();
     dbManager.connect();

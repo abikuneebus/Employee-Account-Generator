@@ -77,7 +77,8 @@ public class StartMenu extends GridPane {
 
   }
 
-  void addOrModMenu() {
+  GridPane addOrModMenu() {
+    System.out.println("addOrModMenu called."); // ! debug
     getChildren().clear();
     setAlignment(Pos.CENTER);
     setHgap(10);
@@ -110,6 +111,8 @@ public class StartMenu extends GridPane {
     modifyAccountBtn.setOnAction(e -> emailApp.showModifyAccountMenu());
 
     add(buttonsBox, 0, 2, 2, 1);
+
+    return this;
   }
   // ~ UTILITY
 

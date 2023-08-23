@@ -84,7 +84,14 @@ public class ModifyAccountMenu extends GridPane {
 
     // - set actions
     userSearchBtn.setOnAction(e -> findAccount());
-    backToMainMenuBtn.setOnAction(e -> emailApp.showStartMenu());
+    backToMainMenuBtn.setOnAction(e -> {
+      System.out.println("Back to Main Menu button clicked.");
+      passwordChangeMenu.resetAccount();
+      if (emailApp != null) {
+        emailApp.showStartMenu();
+      } else
+        System.out.println("emailApp is null!");
+    });
 
     add(buttonsBox, 0, 2, 2, 1);
   }
@@ -156,6 +163,7 @@ public class ModifyAccountMenu extends GridPane {
     updateAccountBtn.setOnAction(e -> updateAccount(existingAccount));
 
     changePasswordBtn.setOnAction(e -> {
+      PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(emailApp, existingAccount);
       passwordChangeMenu.showChangePasswordMenu();
       emailApp.showPasswordChangeMenu(passwordChangeMenu);
 
@@ -200,9 +208,9 @@ public class ModifyAccountMenu extends GridPane {
     EmailAccount account = dbManager.getAccountByUsername(usernameInput);
     dbManager.disconnect();
     if (account == null) {
-
       AlertUtils.showAlert(Alert.AlertType.ERROR, "User Search", "Not Found",
           "Sorry, " + usernameInput + " not found.");
+      return;
     }
     passwordChangeMenu.setAccount(account);
     passwordChangeMenu.showChangePasswordMenu();
@@ -322,6 +330,10 @@ public class ModifyAccountMenu extends GridPane {
       AlertUtils.showErrAlert("Input Error", "Invalid Entry", "Mailbox capacity must be a whole number.");
     }
     return Optional.empty();
+  }
+
+  public void setPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
+    this.passwordChangeMenu = passwordChangeMenu;
   }
 
 }
