@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javafx.util.Pair;
+
 public class DatabaseManager {
   private static final String DATABASE_URL = "jdbc:sqlite:C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
   private Connection connection;
@@ -204,15 +206,17 @@ public class DatabaseManager {
     return null;
   }
 
-  // • getting hashed password
-  public String getHashedPassword(String username) {
-    String sql = "SELECT hashedPassword FROM email_accounts WHERE username = ?";
+  // • getting login credentials (hashed password & department)
+  public Pair<String, String> getLoginCredentials(String username) {
+    String sql = "SELECT hashedPassword, department FROM email_accounts WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
       pstmt.setString(1, username);
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
-          return rs.getString("hashedPassword");
+          String hashedPassword = rs.getString("hashedPassword");
+          String department = rs.getString("department");
+          return new Pair<>(hashedPassword, department);
         }
       }
     } catch (SQLException e) {

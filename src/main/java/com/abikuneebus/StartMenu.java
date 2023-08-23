@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 public class StartMenu extends GridPane {
   private TextField loginUsername;
@@ -93,6 +94,7 @@ public class StartMenu extends GridPane {
     // - buttons
     HBox buttonsBox = new HBox();
 
+    // TODO remove functionality: Enter key navigating to 'Create New Account'
     // new account menu
     Button createAccountBtn = new Button("Create New Account");
 
@@ -115,40 +117,76 @@ public class StartMenu extends GridPane {
   }
   // ~ UTILITY
 
+  // • login
   private void performLogin() {
     String userInput = loginUsername.getText();
     String passwordInput = loginPassword.getText();
-    checkPassword(userInput, passwordInput);
+    checkCredentials(userInput, passwordInput);
   }
 
-  private void checkPassword(String userInput, String passwordInput) {
+  // • verify password & department
+  private void checkCredentials(String userInput, String passwordInput) {
     DatabaseManager.getInstance().connect();
-    String hashedOGPassword = DatabaseManager.getInstance().getHashedPassword(userInput);
-    if (hashedOGPassword != null && BCrypt.checkpw(passwordInput, hashedOGPassword)) {
-      // reset attempt counter
-      loginTries = 0;
-      // set login flag to true
-      emailApp.setIsLoggedIn(true);
-      // show main menu
-      addOrModMenu();
+    Pair<String, String> loginCredentials = DatabaseManager.getInstance().getLoginCredentials(userInput);
+    if (loginCredentials != null) {
+      String hashedOGPassword = loginCredentials.getKey();
+      String department = loginCredentials.getValue();
 
-    } else {
-      loginTries++;
-      int remainingTries = 10 - loginTries;
+      // if password is correct
+      if (BCrypt.checkpw(passwordInput, hashedOGPassword)) {
 
-      // incorrect login error
-      AlertUtils.showAlert(AlertType.ERROR, "Credential Verification Error", remainingTries + " attempts remaining.",
-          "Incorrect username or password! Please try again.");
-
-      // terminate app upon 10 incorrect username/password entries
-      if (loginTries >= 10) {
-        AlertUtils.showAlert(AlertType.WARNING, "Over Limit Error", "Access Restricted",
-            "Maximum attempts reached! Account access temporarily restricted, please contact your IT administrator.");
-
-        // terminate upon acknowledgment
-        System.exit(0);
+        // if department is correct
+        if ("IT".equals(department)) {
+          loginTries = 0;
+          emailApp.setIsLoggedIn(true);
+          addOrModMenu();
+        } else {
+          handleAccessError();
+        }
+        // if password is not correct
+      } else {
+        handleLoginError();
       }
+      // if account does not exist
+    } else {
+      handleLoginError();
     }
     DatabaseManager.getInstance().disconnect();
   }
+
+  // • alerts
+  // incorrect department
+  private void handleAccessError() {
+    // clear fields
+    loginUsername.setText("");
+    loginPassword.setText("");
+
+    AlertUtils.showAlert(AlertType.WARNING, "Credential Validation Error", "Access Restricted",
+        "Account Management System access is restricted to IT department personnel only. Please contact your IT department for assistance.");
+    // terminate upon acknowledgment
+    System.exit(0);
+  }
+
+  // incorrect password
+  private void handleLoginError() {
+    loginTries++;
+    int remainingTries = 10 - loginTries;
+
+    // clear fields
+    loginPassword.setText("");
+
+    // incorrect login error
+    AlertUtils.showAlert(AlertType.ERROR, "Credential Validation Error", remainingTries + " attempts remaining.",
+        "Incorrect username or password! Please try again.");
+
+    // terminate app upon 10 incorrect username/password entries
+    if (loginTries >= 10) {
+      AlertUtils.showAlert(AlertType.WARNING, "Over Limit Error", "Temporary Lockout",
+          "Maximum attempts reached! Account access temporarily restricted, please contact your IT administrator.");
+
+      // terminate upon acknowledgment
+      System.exit(0);
+    }
+  }
+
 }
