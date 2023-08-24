@@ -3,7 +3,6 @@ package com.abikuneebus;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -25,16 +24,13 @@ public class CreateNewAccountMenu extends GridPane {
 
   private void initUI() {
     getChildren().clear();
-    // setPrefSize(750, 350);
-    // setMinSize(750, 350);
-    // setMaxSize(750, 350);
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text newAccountIntroText = new Text("Please enter user's information.");
-    newAccountIntroText.getStyleClass().add("main-intro-text");
+    Text newAccountIntroText = new Text("Enter Account Information");
+    newAccountIntroText.getStyleClass().add("menu-intro-text");
     add(newAccountIntroText, 0, 0, 2, 1);
     setHalignment(newAccountIntroText, HPos.CENTER);
 
@@ -85,7 +81,7 @@ public class CreateNewAccountMenu extends GridPane {
       String department = departmentCmbo.getSelectionModel().getSelectedItem().toString();
 
       if (firstName.isEmpty() || lastName.isEmpty() || department == null || department.isEmpty()) {
-        AlertUtils.showAlert(AlertType.WARNING, "Input Error", "Missing Information", "All fields required!");
+        AlertUtils.showEmptyAlert();
 
         return;
       }

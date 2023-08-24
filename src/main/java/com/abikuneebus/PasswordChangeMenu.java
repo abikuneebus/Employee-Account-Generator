@@ -8,35 +8,29 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
 
 public class PasswordChangeMenu extends GridPane {
   // declare instance variables
   private EmailAccount account;
   private EmailApp emailApp;
-  private ModifyAccountMenu modifyAccountMenu;
 
   // showChangePasswordMenu()
-  private TextField changePWUsername;
-  private TextField changePWNew;
-  private TextField changePWConfirmNew;
+  private PasswordField changePWNew;
+  private PasswordField changePWConfirmNew;
 
-  public PasswordChangeMenu(EmailApp emailApp, EmailAccount account, ModifyAccountMenu modifyAccountMenu) {
+  public PasswordChangeMenu(EmailApp emailApp, EmailAccount account) {
     this.account = account;
     this.emailApp = emailApp;
-    this.modifyAccountMenu = modifyAccountMenu;
 
     // initializing UI
     showChangePasswordMenu();
@@ -45,35 +39,35 @@ public class PasswordChangeMenu extends GridPane {
   // update account from outside of class
   public void setAccount(EmailAccount account) {
     this.account = account;
-  }
-
-  public void setModifyAccountMenu(ModifyAccountMenu modifyAccountMenu) {
-    this.modifyAccountMenu = modifyAccountMenu;
+    showChangePasswordMenu();
   }
 
   // ~ Password Change Menu
   void showChangePasswordMenu() {
+
+    if (changePWNew != null) {
+      changePWNew.setText("");
+    }
+    if (changePWConfirmNew != null) {
+      changePWConfirmNew.setText("");
+    }
+
     getChildren().clear();
     setAlignment(Pos.CENTER);
     setHgap(10);
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    String accountUsername = (account != null) ? account.getUsername() : "unknown";
-    Text changePWAccountIntroText = new Text("Changing password of " + accountUsername + ".");
-
+    // - labels
+    Label changePWAccountIntroText = new Label("Enter New Password");
     changePWAccountIntroText.getStyleClass().add("menu-intro-text");
     add(changePWAccountIntroText, 0, 0, 2, 1);
     setHalignment(changePWAccountIntroText, HPos.CENTER);
 
-    // - labels
-    add(new Label("Username:"), 0, 1);
-    add(new Label("Password"), 0, 2);
-    add(new Label("Confirm Password"), 0, 3);
+    add(new Label("Password"), 0, 1);
+    add(new Label("Confirm Password"), 0, 2);
 
     // - defining text fields
-    // username
-    changePWUsername = new TextField();
     // new password
     changePWNew = new PasswordField();
     // new password confirmation
@@ -85,14 +79,12 @@ public class PasswordChangeMenu extends GridPane {
         changePassword(account);
       }
     };
-    changePWUsername.setOnKeyPressed(enterKeyListener);
     changePWNew.setOnKeyPressed(enterKeyListener);
     changePWConfirmNew.setOnKeyPressed(enterKeyListener);
 
     // - adding text fields
-    add(changePWUsername, 1, 1);
-    add(changePWNew, 1, 2);
-    add(changePWConfirmNew, 1, 3);
+    add(changePWNew, 1, 1);
+    add(changePWConfirmNew, 1, 2);
 
     // - buttons
     HBox buttonsBox = new HBox();
@@ -101,8 +93,8 @@ public class PasswordChangeMenu extends GridPane {
     Button passwordChangeBtn = new Button("Change Password");
 
     // disable if any fields are empty
-    passwordChangeBtn.disableProperty().bind(changePWUsername.textProperty().isEmpty()
-        .or(changePWNew.textProperty().isEmpty()).or(changePWConfirmNew.textProperty().isEmpty()));
+    passwordChangeBtn.disableProperty()
+        .bind((changePWNew.textProperty().isEmpty()).or(changePWConfirmNew.textProperty().isEmpty()));
 
     // 'cancel'
     Button cancelChangeBtn = new Button("Cancel");
@@ -121,22 +113,13 @@ public class PasswordChangeMenu extends GridPane {
   }
 
   // ~ Utility
-
   // * RETURN TO UPDATE/DELETE MENU
   private void returnToUpdateDelete(EmailAccount account) {
-    // Check if modifyAccountMenu is not null
-    if (modifyAccountMenu != null) {
-      emailApp.showModifyAccountMenu();
-      modifyAccountMenu.showUpdateDeleteMenu(account);
-    } else {
-      // Debug statement if modifyAccountMenu is null
-      System.out.println("modifyAccountMenu is null");
-    }
+    emailApp.showUpdateDeleteMenu(account);
   }
 
   // * CHANGE PASSWORD
   private void changePassword(EmailAccount account) {
-    String confirmUserInput = changePWUsername.getText();
     String newPasswordInput = changePWNew.getText();
     String confirmNewPasswordInput = changePWConfirmNew.getText();
 
@@ -150,13 +133,12 @@ public class PasswordChangeMenu extends GridPane {
     if (result.isPresent() && result.get() == btnYes) {
 
       // check for empty fields
-      if (confirmUserInput.isEmpty() || newPasswordInput.isEmpty()
+      if (newPasswordInput.isEmpty()
           || confirmNewPasswordInput.isEmpty()) {
-        Alert emptyAlert = new Alert(AlertType.WARNING);
-        emptyAlert.setTitle("Input Error");
-        emptyAlert.setHeaderText("Missing Information");
-        emptyAlert.setContentText("All fields required!");
-        emptyAlert.showAndWait();
+
+        AlertUtils.showEmptyAlert();
+        clearForm();
+        return;
       }
 
       // - verify new password input matches
@@ -164,17 +146,20 @@ public class PasswordChangeMenu extends GridPane {
       if (!(newPasswordInput.equals(confirmNewPasswordInput))) {
         // show alert
         AlertUtils.showAlert(AlertType.ERROR, "Validation", newPasswordInput, "Please ensure both passwords match!");
+        clearForm();
+        return;
       }
 
       // - new password input validation
       // validating password
       char[] charNewPassword = confirmNewPasswordInput.toCharArray();
-      Email email = new Email(null, null, null);
-      String passwordValidationResult = email.isPasswordValid(charNewPassword);
+      String passwordValidationResult = Email.isPasswordValid(charNewPassword);
 
       // if invalid, display alert with explanation
       if (passwordValidationResult != null) {
         AlertUtils.showAlert(AlertType.ERROR, "Validation", "Invalid Password", passwordValidationResult);
+        clearForm();
+        return;
       }
 
       // - update password
@@ -190,13 +175,25 @@ public class PasswordChangeMenu extends GridPane {
       dbManager.connect();
       dbManager.updatePassword(updatedAccount);
       dbManager.disconnect();
+      returnToUpdateDelete(updatedAccount);
+      clearForm();
 
       // if user selects 'No', close dialog
     } else {
       AlertUtils.showInfoAlert("Password Change", "Cancelled", "Password change cancelled!");
-      modifyAccountMenu.showUpdateDeleteMenu(account);
+      clearForm();
+      return;
     }
+  }
 
+  // clearing state
+  void clearForm() {
+    if (changePWNew != null) {
+      changePWNew.setText("");
+    }
+    if (changePWConfirmNew != null) {
+      changePWConfirmNew.setText("");
+    }
   }
 
 }

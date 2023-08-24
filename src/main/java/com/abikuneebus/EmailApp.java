@@ -5,12 +5,16 @@ import java.util.List;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class EmailApp extends Application {
   public static List<EmailAccount> accounts = new ArrayList<>();
-  private Stage primaryStage; // reference to primary stage
-  private boolean isLoggedIn = false;
+  private Stage primaryStage;
+  boolean isLoggedIn = false;
+  private ModifyAccountMenu modifyAccountMenu;
+  private Scene updateDeleteScene;
+  private Scene passwordChangeScene;
 
   public static void main(String[] args) {
     launch(args);
@@ -18,22 +22,24 @@ public class EmailApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    this.primaryStage = primaryStage; // save reference to primary stage
-    showStartMenu(); // show the start menu
+    this.primaryStage = primaryStage;
+    showStartMenu();
   }
 
   public void showStartMenu() {
-    // bypass login screen if logged in
     if (isLoggedIn) {
       StartMenu startMenu = new StartMenu(this);
-      startMenu.addOrModMenu();
+      GridPane gridPane = startMenu.addOrModMenu();
+      Scene scene = new Scene(gridPane, 550, 350); // # login
+      primaryStage.setResizable(false);
+      scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+      primaryStage.setScene(scene);
     } else {
       StartMenu startMenu = new StartMenu(this);
-      Scene scene = new Scene(startMenu, 750, 375);
+      Scene scene = new Scene(startMenu, 550, 350); // # main
       primaryStage.setResizable(false);
-      scene.getStylesheets()
-          .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
-      primaryStage.setTitle("Email App");
+      scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+      primaryStage.setTitle("The Software Farm®");
       primaryStage.setScene(scene);
       primaryStage.show();
     }
@@ -41,41 +47,50 @@ public class EmailApp extends Application {
 
   public void showCreateAccountMenu() {
     CreateNewAccountMenu createNewAccountMenu = new CreateNewAccountMenu(this);
-    Scene scene = new Scene(createNewAccountMenu, 750, 375);
+    Scene scene = new Scene(createNewAccountMenu, 550, 350); // # create new
     primaryStage.setResizable(false);
-    scene.getStylesheets()
-        .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
-    primaryStage.setTitle("Create New Account");
+    scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+    primaryStage.setTitle("New Account");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
 
   public void showModifyAccountMenu() {
-    // creating with null EmailAccount and ModifyAccountMenu initially
-    PasswordChangeMenu passwordChangeMenu = new PasswordChangeMenu(this, null, null);
 
-    ModifyAccountMenu modifyAccountMenu = new ModifyAccountMenu(this, passwordChangeMenu);
+    ModifyAccountMenu modifyAccountMenu = new ModifyAccountMenu(this);
 
-    // setting modifyAccountMenu reference in passwordChangeMenu
-    passwordChangeMenu.setModifyAccountMenu(modifyAccountMenu);
-
-    Scene scene = new Scene(modifyAccountMenu, 750, 375);
+    Scene scene = new Scene(modifyAccountMenu, 700, 350); // # user search
     primaryStage.setResizable(false);
-    scene.getStylesheets()
-        .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
-    primaryStage.setTitle("Modify Existing Account");
+    scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+    primaryStage.setTitle("Modify Account");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
 
   public void showPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
-    Scene scene = new Scene(passwordChangeMenu, 750, 375);
+    passwordChangeMenu.clearForm();
+    if (passwordChangeScene == null) {
+      passwordChangeScene = new Scene(passwordChangeMenu, 550, 350); // # change PW
+      passwordChangeScene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+    }
     primaryStage.setResizable(false);
-
-    scene.getStylesheets()
-        .add("file:///C:/Projects/Java/accountgenerator/accountgen/src/main/resources/styles/stylesheet.css");
     primaryStage.setTitle("Change Password");
-    primaryStage.setScene(scene);
+    primaryStage.setScene(passwordChangeScene);
+    primaryStage.show();
+  }
+
+  public void showUpdateDeleteMenu(EmailAccount account) {
+    if (modifyAccountMenu == null) {
+      modifyAccountMenu = new ModifyAccountMenu(this);
+    }
+    modifyAccountMenu.showUpdateDeleteMenu(account);
+    if (updateDeleteScene == null) {
+      updateDeleteScene = new Scene(modifyAccountMenu, 750, 350); // # update/delete
+      updateDeleteScene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
+    }
+    primaryStage.setResizable(false);
+    primaryStage.setTitle("Modify Existing Account");
+    primaryStage.setScene(updateDeleteScene);
     primaryStage.show();
   }
 

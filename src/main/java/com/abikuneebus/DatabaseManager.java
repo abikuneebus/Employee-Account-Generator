@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javafx.util.Pair;
+
 public class DatabaseManager {
   private static final String DATABASE_URL = "jdbc:sqlite:C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
   private Connection connection;
@@ -74,7 +76,6 @@ public class DatabaseManager {
   }
 
   // ↓ GENERAL CRUD
-
   // • adding new accounts
   public void insertEmailAccount(EmailAccount emailAccount) {
     String sql = "INSERT INTO email_accounts(firstName,lastName,department,email,username,hashedPassword, mailboxCapacity) VALUES(?,?,?,?,?,?,?)";
@@ -88,7 +89,6 @@ public class DatabaseManager {
       pstmt.setString(6, emailAccount.getHashedPassword());
       pstmt.setInt(7, emailAccount.getMailCapacity());
 
-      // executes prepared statement, inserting data
       pstmt.executeUpdate();
 
     } catch (SQLException e) {
@@ -101,7 +101,7 @@ public class DatabaseManager {
     String sql = "SELECT firstName,lastName,department,email,username,hashedPassword, mailboxCapacity FROM email_accounts WHERE email = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-      pstmt.setString(1, emailAccount.getEmail()); // WHERE email = ?
+      pstmt.setString(1, emailAccount.getEmail());
 
       try (ResultSet resultSet = pstmt.executeQuery()) {
 
@@ -159,7 +159,6 @@ public class DatabaseManager {
   }
 
   // ↓ UTILITY
-
   // • check if given username already exists
   public boolean isUsernameTaken(String username) {
     String sql = "SELECT COUNT(username) FROM email_accounts WHERE username = ?";
@@ -205,15 +204,17 @@ public class DatabaseManager {
     return null;
   }
 
-  // • getting hashed password
-  public String getHashedPassword(String username) {
-    String sql = "SELECT hashedPassword FROM email_accounts WHERE username = ?";
+  // • getting login credentials (hashed password & department)
+  public Pair<String, String> getLoginCredentials(String username) {
+    String sql = "SELECT hashedPassword, department FROM email_accounts WHERE username = ?";
 
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
       pstmt.setString(1, username);
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
-          return rs.getString("hashedPassword");
+          String hashedPassword = rs.getString("hashedPassword");
+          String department = rs.getString("department");
+          return new Pair<>(hashedPassword, department);
         }
       }
     } catch (SQLException e) {

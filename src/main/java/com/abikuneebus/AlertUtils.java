@@ -2,10 +2,16 @@ package com.abikuneebus;
 
 import java.util.Optional;
 
+import javafx.animation.PauseTransition;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.util.Duration;
 
 public class AlertUtils {
   // private constructor to prevent instantiation
@@ -33,7 +39,12 @@ public class AlertUtils {
     showAlert(AlertType.WARNING, alertTitle, alertHeader, alertContent);
   }
 
-  // # confirmation with buttons & show and wait
+  // # empty field
+  public static void showEmptyAlert() {
+    showAlert(AlertType.ERROR, "Input Error", "Input Error", "All fields required!");
+  }
+
+  // # confirmation—w/ custom buttons and show & wait
   public static Optional<ButtonType> showCustomConfirmAlert(String alertTitle, String alertHeader, String alertContent,
       ButtonType... buttons) {
     Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
@@ -61,6 +72,50 @@ public class AlertUtils {
     alert.setHeaderText(alertHeader);
     alert.setContentText(alertContent);
     alert.showAndWait();
+  }
+
+  // # shows dialog w/ login crendentials upon startup
+  // ! for demo purposes only — this probably isn't the best security practice
+  public static void showDemoAlert(String title, String headerText, String contentTextUser,
+      String contentTextPassword) {
+    Alert alert = new Alert(AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    alert.initModality(Modality.NONE);
+
+    TextField textFieldUser = new TextField(contentTextUser);
+    textFieldUser.setEditable(false);
+    textFieldUser.setPrefHeight(15);
+    textFieldUser.setMaxHeight(15);
+    textFieldUser.getStyleClass().add("read-only-field");
+
+    TextField textFieldPassword = new TextField(contentTextPassword);
+    textFieldPassword.setEditable(false);
+    textFieldPassword.setPrefHeight(15);
+    textFieldPassword.setMaxHeight(15);
+    textFieldPassword.getStyleClass().add("read-only-field");
+
+    GridPane content = new GridPane();
+    content.setHgap(10);
+    content.setVgap(10);
+    content.setMinWidth(300);
+    content.setMaxHeight(100);
+    content.setMinHeight(100);
+
+    content.add(new Label("Username:"), 0, 0);
+    content.add(textFieldUser, 1, 0);
+    content.add(new Label("Password:"), 0, 1);
+    content.add(textFieldPassword, 1, 1);
+
+    Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+    alert.getDialogPane().getStylesheets().add("/styles/stylesheet.css");
+    okButton.getStyleClass().add("demo-alert-button");
+
+    PauseTransition delay = new PauseTransition(Duration.seconds(1));
+    delay.setOnFinished(e -> alert.show());
+    delay.play();
+
+    alert.getDialogPane().setContent(content);
   }
 
 }
