@@ -15,13 +15,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
-
-// * search for existing account & choice to delete/modify
 
 public class ModifyAccountMenu extends GridPane {
   private EmailApp emailApp;
-  // private PasswordChangeMenu passwordChangeMenu;
 
   // update/delete menu
   private TextField userInputField;
@@ -33,10 +29,9 @@ public class ModifyAccountMenu extends GridPane {
 
   // * MENUS
 
-  public ModifyAccountMenu(EmailApp emailApp /* , PasswordChangeMenu passwordChangeMenu */) {
+  public ModifyAccountMenu(EmailApp emailApp) {
 
     this.emailApp = emailApp;
-    // this.passwordChangeMenu = passwordChangeMenu;
 
     showSearchMenu();
   }
@@ -49,13 +44,13 @@ public class ModifyAccountMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text findAccountIntroText = new Text("User Search");
+    Label findAccountIntroText = new Label("User Search");
     findAccountIntroText.getStyleClass().add("menu-intro-text");
     add(findAccountIntroText, 0, 0, 2, 1);
     setHalignment(findAccountIntroText, HPos.CENTER);
 
     // - labels
-    add(new Label("Account's username:"), 0, 1);
+    add(new Label("Username:"), 0, 1);
 
     // - text fields
     userInputField = new TextField();
@@ -95,7 +90,7 @@ public class ModifyAccountMenu extends GridPane {
     add(buttonsBox, 0, 2, 2, 1);
   }
 
-  // * allows modification of account details or deletion of account
+  // - allows modification of account details or deletion of account
 
   void showUpdateDeleteMenu(EmailAccount existingAccount) {
     getChildren().clear();
@@ -111,12 +106,12 @@ public class ModifyAccountMenu extends GridPane {
     add(new Label("Email Address:"), 0, 4);
     add(new Label("Mailbox Capacity:"), 0, 5);
 
-    // - text fields
-    Text modAccountIntroText = new Text("Modifying Account of " + existingAccount.getUsername());
+    Label modAccountIntroText = new Label("Modifying Account of " + existingAccount.getUsername());
     modAccountIntroText.getStyleClass().add("menu-intro-text");
     add(modAccountIntroText, 0, 0, 2, 1);
     setHalignment(modAccountIntroText, HPos.CENTER);
 
+    // - text fields
     firstNameField = new TextField(existingAccount.getFirstName()); // modifiable
     add(firstNameField, 1, 1);
 
@@ -184,7 +179,7 @@ public class ModifyAccountMenu extends GridPane {
 
   // * UTILITY FUNCTIONS
 
-  // * FIND ACCOUNT
+  // • find account via username
   private void findAccount() {
     String usernameInput = userInputField.getText();
 
@@ -192,7 +187,7 @@ public class ModifyAccountMenu extends GridPane {
     String validationMsg = Email.isNameValid(usernameInput);
 
     if (usernameInput.isEmpty()) {
-      AlertUtils.showWarnAlert("Required Field", "Missing Information", "Username Required!");
+      AlertUtils.showEmptyAlert();
       return;
     }
 
@@ -211,15 +206,20 @@ public class ModifyAccountMenu extends GridPane {
           "Sorry, " + usernameInput + " not found.");
       return;
     }
-    // passwordChangeMenu.setAccount(account);
-    // passwordChangeMenu.showChangePasswordMenu();
+
     showUpdateDeleteMenu(account);
   }
 
-  // * UPDATE ACCOUNT DETAILS
+  // • updates first name, last name &/or mailbox capacity
   private void updateAccount(EmailAccount existingAccount) {
+
+    if (firstNameField.getText().isEmpty() || lastNameField.getText().isEmpty()
+        || mailCapacityField.getText().isEmpty()) {
+      AlertUtils.showEmptyAlert();
+      return;
+    }
+
     String alertMsgUsername = existingAccount.getUsername();
-    // confirm intent
 
     ButtonType btnYes = new ButtonType("Yes");
     ButtonType btnNo = new ButtonType("No");
@@ -275,7 +275,7 @@ public class ModifyAccountMenu extends GridPane {
 
   }
 
-  // * DELETE ACCOUNT
+  // • deletes account
   private void deleteAccount(EmailAccount account) {
     String alertMsgUsername = account.getUsername();
 
@@ -316,7 +316,7 @@ public class ModifyAccountMenu extends GridPane {
     }
   }
 
-  // * PARSE/VALIDATE MAIL CAPACITY INPUT
+  // • validates mailbox capacity update input
   private Optional<Integer> parseAndValidateMailCapacity(String mailCapacityText) {
     try {
       int mailCapacity = Integer.parseInt(mailCapacityText);
@@ -330,9 +330,5 @@ public class ModifyAccountMenu extends GridPane {
     }
     return Optional.empty();
   }
-  //
-  // public void setPasswordChangeMenu(PasswordChangeMenu passwordChangeMenu) {
-  // this.passwordChangeMenu = passwordChangeMenu;
-  // }
 
 }

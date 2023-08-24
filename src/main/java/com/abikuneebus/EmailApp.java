@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 public class EmailApp extends Application {
   public static List<EmailAccount> accounts = new ArrayList<>();
-  private Stage primaryStage; // reference to primary stage
+  private Stage primaryStage;
   boolean isLoggedIn = false;
   private ModifyAccountMenu modifyAccountMenu;
   private Scene updateDeleteScene;
@@ -22,8 +22,8 @@ public class EmailApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    this.primaryStage = primaryStage; // save reference to primary stage
-    showStartMenu(); // show the start menu
+    this.primaryStage = primaryStage;
+    showStartMenu();
   }
 
   public void showStartMenu() {
@@ -39,7 +39,7 @@ public class EmailApp extends Application {
       Scene scene = new Scene(startMenu, 550, 350); // # main
       primaryStage.setResizable(false);
       scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
-      primaryStage.setTitle("Email App");
+      primaryStage.setTitle("The Software Farm®");
       primaryStage.setScene(scene);
       primaryStage.show();
     }
@@ -50,7 +50,7 @@ public class EmailApp extends Application {
     Scene scene = new Scene(createNewAccountMenu, 550, 350); // # create new
     primaryStage.setResizable(false);
     scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
-    primaryStage.setTitle("Create New Account");
+    primaryStage.setTitle("New Account");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
@@ -62,7 +62,7 @@ public class EmailApp extends Application {
     Scene scene = new Scene(modifyAccountMenu, 700, 350); // # user search
     primaryStage.setResizable(false);
     scene.getStylesheets().add(getClass().getResource("/styles/stylesheet.css").toExternalForm());
-    primaryStage.setTitle("Modify Existing Account");
+    primaryStage.setTitle("Modify Account");
     primaryStage.setScene(scene);
     primaryStage.show();
   }

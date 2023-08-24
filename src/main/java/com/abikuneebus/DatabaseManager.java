@@ -76,7 +76,6 @@ public class DatabaseManager {
   }
 
   // ↓ GENERAL CRUD
-
   // • adding new accounts
   public void insertEmailAccount(EmailAccount emailAccount) {
     String sql = "INSERT INTO email_accounts(firstName,lastName,department,email,username,hashedPassword, mailboxCapacity) VALUES(?,?,?,?,?,?,?)";
@@ -160,7 +159,6 @@ public class DatabaseManager {
   }
 
   // ↓ UTILITY
-
   // • check if given username already exists
   public boolean isUsernameTaken(String username) {
     String sql = "SELECT COUNT(username) FROM email_accounts WHERE username = ?";

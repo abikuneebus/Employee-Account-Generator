@@ -16,7 +16,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
 import javafx.util.Pair;
 
 public class StartMenu extends GridPane {
@@ -24,7 +23,7 @@ public class StartMenu extends GridPane {
   private PasswordField loginPassword;
   private int loginTries = 0;
 
-  private EmailApp emailApp; // reference to main app class
+  private EmailApp emailApp;
 
   public StartMenu(EmailApp emailApp) {
     this.emailApp = emailApp;
@@ -38,8 +37,8 @@ public class StartMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text loginText = new Text("Log In");
-    loginText.getStyleClass().add("menu-intro-text");
+    Label loginText = new Label("Account Management System");
+    loginText.getStyleClass().add("main-intro-text");
     add(loginText, 0, 0, 2, 1);
     setHalignment(loginText, HPos.CENTER);
 
@@ -87,7 +86,7 @@ public class StartMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text mainIntroText = new Text("Select an Action");
+    Label mainIntroText = new Label("Make a Selection:");
     mainIntroText.getStyleClass().add("menu-intro-text");
     add(mainIntroText, 0, 0, 2, 1);
 
@@ -122,6 +121,12 @@ public class StartMenu extends GridPane {
   private void performLogin() {
     String userInput = loginUsername.getText();
     String passwordInput = loginPassword.getText();
+
+    if (userInput.isEmpty() || passwordInput.isEmpty()) {
+      AlertUtils.showEmptyAlert();
+      return;
+    }
+
     checkCredentials(userInput, passwordInput);
   }
 

@@ -8,7 +8,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -19,7 +18,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
 
 public class PasswordChangeMenu extends GridPane {
   // declare instance variables
@@ -60,13 +58,12 @@ public class PasswordChangeMenu extends GridPane {
     setVgap(10);
     setPadding(new Insets(20, 10, 10, 10));
 
-    Text changePWAccountIntroText = new Text("Enter New Password");
-
+    // - labels
+    Label changePWAccountIntroText = new Label("Enter New Password");
     changePWAccountIntroText.getStyleClass().add("menu-intro-text");
     add(changePWAccountIntroText, 0, 0, 2, 1);
     setHalignment(changePWAccountIntroText, HPos.CENTER);
 
-    // - labels
     add(new Label("Password"), 0, 1);
     add(new Label("Confirm Password"), 0, 2);
 
@@ -116,7 +113,6 @@ public class PasswordChangeMenu extends GridPane {
   }
 
   // ~ Utility
-
   // * RETURN TO UPDATE/DELETE MENU
   private void returnToUpdateDelete(EmailAccount account) {
     emailApp.showUpdateDeleteMenu(account);
@@ -139,11 +135,8 @@ public class PasswordChangeMenu extends GridPane {
       // check for empty fields
       if (newPasswordInput.isEmpty()
           || confirmNewPasswordInput.isEmpty()) {
-        Alert emptyAlert = new Alert(AlertType.WARNING);
-        emptyAlert.setTitle("Input Error");
-        emptyAlert.setHeaderText("Missing Information");
-        emptyAlert.setContentText("All fields required!");
-        emptyAlert.showAndWait();
+
+        AlertUtils.showEmptyAlert();
         clearForm();
         return;
       }
