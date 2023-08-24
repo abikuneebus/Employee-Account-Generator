@@ -12,11 +12,11 @@
 		1.0
 	</version>
 	<properties>
-		<!-- ! -->
+		<!-- ? -->
 		<java.version>
 			20
 		</java.version>
-		<!-- ! -->
+		<!-- ? -->
 		<maven.compiler.source>
 			1.8
 		</maven.compiler.source>
@@ -90,18 +90,6 @@
 				test
 			</scope>
 		</dependency>
-		<!-- GSON -->
-		<dependency>
-			<groupId>
-				com.google.code.gson
-			</groupId>
-			<artifactId>
-				gson
-			</artifactId>
-			<version>
-				2.8.9
-			</version>
-		</dependency>
 		<!-- JavaFX -->
 		<dependency>
 			<groupId>
@@ -114,6 +102,7 @@
 				20.0.2
 			</version>
 		</dependency>
+		<!-- /JavaFX/ -->
 		<dependency>
 			<groupId>
 				org.openjfx
@@ -137,6 +126,7 @@
 				0.4
 			</version>
 		</dependency>
+		<!-- /bcrypt/ -->
 		<!-- jdbc -->
 		<dependency>
 			<groupId>
@@ -149,9 +139,65 @@
 				3.42.0.0
 			</version>
 		</dependency>
+		<!-- /jdbc/ -->
 	</dependencies>
+	<!-- ! BUILD ! -->
 	<build>
 		<plugins>
+			<!-- FAT JAR -->
+			<plugin>
+				<groupId>
+					org.apache.maven.plugins
+				</groupId>
+				<artifactId>
+					maven-shade-plugin
+				</artifactId>
+				<version>
+					3.2.4
+				</version>
+				<executions>
+					<execution>
+						<phase>
+							package
+						</phase>
+						<goals>
+							<goal>
+								shade
+							</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>
+										com.abikuneebus.EmailApp
+									</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- /FAT JAR/ -->
+			<plugin>
+				<groupId>
+					org.apache.maven.plugins
+				</groupId>
+				<artifactId>
+					maven-jar-plugin
+				</artifactId>
+				<version>
+					3.2.0
+				</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>
+								com.abikuneebus.EmailApp
+							</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>
 					org.apache.maven.plugins
@@ -200,69 +246,6 @@
 					</mainClass>
 				</configuration>
 			</plugin>
-			<!--
-			<plugin>
-			<groupId>
-			org.apache.maven.plugins
-			</groupId>
-			<artifactId>
-			maven-checkstyle-plugin
-			</artifactId>
-			<version>
-			${maven-checkstyle-plugin.version}
-			</version>
-			<dependencies>
-			<dependency>
-			<groupId>
-			com.puppycrawl.tools
-			</groupId>
-			<artifactId>
-			checkstyle
-			</artifactId>
-			<version>
-			${checkstyle.version}
-			</version>
-			</dependency>
-			<dependency>
-			<groupId>
-			com.github.ngeor
-			</groupId>
-			<artifactId>
-			checkstyle-rules
-			</artifactId>
-			<version>
-			4.9.3
-			</version>
-			</dependency>
-			</dependencies>
-			<configuration>
-			<configLocation>
-			com/github/ngeor/checkstyle.xml
-			</configLocation>
-			<includeTestSourceDirectory>
-			true
-			</includeTestSourceDirectory>
-			<skip>
-			${skipTests}
-			</skip>
-			</configuration>
-			<executions>
-			<execution>
-			<id>
-			checkstyle
-			</id>
-			<phase>
-			validate
-			</phase>
-			<goals>
-			<goal>
-			check
-			</goal>
-			</goals>
-			</execution>
-			</executions>
-			</plugin>
-			-->
 			<plugin>
 				<groupId>
 					org.apache.maven.plugins
@@ -397,6 +380,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	<!-- ! /BUILD/ ! -->
 	<reporting>
 		<plugins>
 			<plugin>

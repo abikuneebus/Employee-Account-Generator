@@ -10,7 +10,7 @@ import java.sql.Statement;
 import javafx.util.Pair;
 
 public class DatabaseManager {
-  private static final String DATABASE_URL = "jdbc:sqlite:C:\\Projects\\Java\\accountgenerator\\accountgen\\accounts.db";
+  private static final String DATABASE_URL = "jdbc:sqlite:assets\\db\\accounts.db";
   private Connection connection;
   private static DatabaseManager instance;
 

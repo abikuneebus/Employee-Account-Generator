@@ -75,7 +75,7 @@ public class StartMenu extends GridPane {
       performLogin();
     });
     if (emailApp.isLoggedIn == false) {
-      AlertUtils.showDemoAlert("FOR DEMO PURPOSES ONLY", "Copy To Clipboard", "ITAdmin", "Thank$F0rY0urTim3!");
+      AlertUtils.showDemoLoginAlert("DEMO", "Demo Login Credentials", "ITAdmin", "Thank$F0rY0urTim3!");
     }
   }
 
