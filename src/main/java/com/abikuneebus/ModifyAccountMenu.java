@@ -11,10 +11,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.util.Duration;
 
 public class ModifyAccountMenu extends GridPane {
   private EmailApp emailApp;
@@ -54,6 +56,11 @@ public class ModifyAccountMenu extends GridPane {
 
     // - text fields
     userInputField = new TextField();
+    // ! demo: tooltip
+    Tooltip tooltip = new Tooltip("firstnameLastname, oprahWinfrey, billyMays, etc.");
+    tooltip.setShowDelay(Duration.millis(100)); // Set the delay to 100 milliseconds
+
+    userInputField.setTooltip(tooltip);
     add(userInputField, 1, 1);
     // enter key listener
     userInputField.setOnKeyPressed(e -> {
@@ -80,11 +87,7 @@ public class ModifyAccountMenu extends GridPane {
     // - set actions
     userSearchBtn.setOnAction(e -> findAccount());
     backToMainMenuBtn.setOnAction(e -> {
-      System.out.println("Back to Main Menu button clicked.");
-      if (emailApp != null) {
-        emailApp.showStartMenu();
-      } else
-        System.out.println("emailApp is null!");
+      emailApp.showStartMenu();
     });
 
     add(buttonsBox, 0, 2, 2, 1);

@@ -76,7 +76,7 @@ public class AlertUtils {
 
   // # shows dialog w/ login crendentials upon startup
   // ! for demo purposes only — this probably isn't the best security practice
-  public static void showDemoAlert(String title, String headerText, String contentTextUser,
+  public static void showDemoLoginAlert(String title, String headerText, String contentTextUser,
       String contentTextPassword) {
     Alert alert = new Alert(AlertType.INFORMATION);
     alert.setTitle(title);
@@ -107,12 +107,12 @@ public class AlertUtils {
     content.add(new Label("Password:"), 0, 1);
     content.add(textFieldPassword, 1, 1);
 
-    Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-    alert.getDialogPane().getStylesheets().add("/styles/stylesheet.css");
-    okButton.getStyleClass().add("demo-alert-button");
-
-    PauseTransition delay = new PauseTransition(Duration.seconds(1));
-    delay.setOnFinished(e -> alert.show());
+    PauseTransition delay = new PauseTransition(Duration.millis(250));
+    delay.setOnFinished(e -> {
+      alert.show();
+      alert.setX(alert.getX() + 250); // adjusting X position
+      alert.setY(alert.getY() + 220); // adjusting Y position
+    });
     delay.play();
 
     alert.getDialogPane().setContent(content);
