@@ -1,19 +1,19 @@
 # Account Generator
 
 ### Table of Contents
-1. [[#Introduction]]
-2. [[#*About the Developer*|About the Developer & Contact]]
-3. [[#Tech Stack Used]]
-4. [[#Installation & Running]]
-5. [[#GUI Components & Functionality]]
-6. [[#Future Improvements *(hypothetical)*|Future Improvements]]
-7. [[#*Closing Thoughts*|Closing Thoughts]]
-8. [[#Screenshots]]
+1. Introduction
+2. About the Developer & Contact
+3. Tech Stack Used
+4. Installation & Running
+5. GUI Components & Functionality
+6. Future Improvements
+7. Closing Thoughts
+8. Screenshots
 
 -------------------------------------------------------------------------
 ##### Introduction
 I know that installing and configuring runtimes, setting environment variables, and the rest of the steps needed to run this app in a development environment is a very big ask. I also know that, for very good reason, nobody is going to unzip a stranger's demo application directory, let alone run an executable from within it. I went in depth on how to do both of the aforementioned things for posterity's sake, but I don't expect it from anyone. 
-To hopefully serve as a middle-ground, I'm including screenshots that capture all the major functionality of the app. So as to not interrupt the flow of the `README`, I've inserted them at the bottom of the document, out of the way. If you want to jump straight to them, you can click [[#Screenshots|here]]. Thanks for your time!
+To hopefully serve as a middle-ground, I'm including screenshots that capture all the major functionality of the app. So as to not interrupt the flow of the `README`, I've inserted them at the bottom of the document, out of the way. Thanks for your time!
 
 -------------------------------------------------------------------------
 ###### *About the Developer*
