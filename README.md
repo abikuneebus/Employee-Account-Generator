@@ -1,8 +1,24 @@
 # Account Generator
+
+### Table of Contents
+1. [[#Introduction]]
+2. [[#*About the Developer*|About the Developer & Contact]]
+3. [[#Tech Stack Used]]
+4. [[#Installation & Running]]
+5. [[#GUI Components & Functionality]]
+6. [[#Future Improvements *(hypothetical)*|Future Improvements]]
+7. [[#*Closing Thoughts*|Closing Thoughts]]
+8. [[#Screenshots]]
+
+-------------------------------------------------------------------------
+##### Introduction
+I know that installing and configuring runtimes, setting environment variables, and the rest of the steps needed to run this app in a development environment is a very big ask. I also know that, for very good reason, nobody is going to unzip a stranger's demo application directory, let alone run an executable from within it. I went in depth on how to do both of the aforementioned things for posterity's sake, but I don't expect it from anyone. 
+To hopefully serve as a middle-ground, I'm including screenshots that capture all the major functionality of the app. So as to not interrupt the flow of the `README`, I've inserted them at the bottom of the document, out of the way. If you want to jump straight to them, you can click [[#Screenshots|here]]. Thanks for your time!
+
+-------------------------------------------------------------------------
 ###### *About the Developer*
-'Account Generator' is an application that was built by someone who was proficient with JavaScript/TypeScript, but wanted to add native programming language experience to his repertoire.
-At first, the app was going to be a command-line app that returned an email address and randomly generated password given a name and department. After a few days, it became obvious to the developer that creating such a simple app could not provide the level of skill development that he desired.
-Almost a month later, and the app had fulfilled its purpose and then some. SQL was the next skill on the developer's list of technologies to become more comfortable with, so an SQL database was added to store the account information that the application generated.
+I built 'Account Generator' because while I had become proficient with JavaScript, TypeScript, HTML, CSS, etc., I felt I needed to add native programming language experience to my repertoire. The initial idea for the application was a command line only utility app that would return an email address and randomly generated password as output given an "employee's" name and department, and was planned to be completed over a weekend. A few days later, I realized that I could not honestly call myself "comfortable" or even a novice at Java after creating such a simple app. I also had intended on diving deeper into object-oriented programming than I had with my web development endeavors, something the command line app wasn't capable of providing. Thus, I continued adding features.
+Almost a month later, and the app had fulfilled its original purpose and then some. On top of becoming comfortable with Java and much better versed in OOP, I added SQL to my skillset. SQL was the next item on my list of technologies to learn, and an account generation app doesn't make much sense if it's not going to keep track of what it creates.
 
 *Contact:*
 brennan.obriencahill@gmail.com
@@ -120,3 +136,38 @@ If you are reading this, I cannot express enough how grateful I am for your time
 
 Best,
 Brennan
+
+### Screenshots
+![Login-Demo](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/800fddc1-0ad3-4d91-bea8-17d6dc10073c)
+
+![Login-Values](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/ad5b67d3-76a3-4e60-bbdc-f05a172d0580)
+
+![Login-EFError](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/f6d96f0d-23b9-4c07-8acb-76c2eadc6fe5)
+
+![Login-CVError](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/431f2469-ba59-4300-81a6-db6df67f6570)
+
+![Login-TempLockout](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/1172c145-6b33-4676-a32c-06586cd03b76)
+
+![AddOrMod](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/8cb6c4ca-73f7-427c-ae99-949da8d7aa89)
+
+![CreateNewAccount-Dept](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/15b28aaa-1421-4d56-8943-dda7320764d3)
+
+![UserSearch-Tooltip](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/a5fa6a1b-9c4e-4bf5-8b2f-e75fc54cd1ad)
+
+![UserSearch-johnnyA](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/68040bee-6638-41ab-a5ca-bbeb0e5b6fdf)
+
+![ModifyAccountMenu-johnnyA](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/d498a986-cdfc-47c0-bc13-c7c74d43174d)
+
+![ModifyAccountMenu-mailCap](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/f74bc736-f963-4e0d-8a38-db3d6f7243c7)
+
+![ChangePW-Tooltip](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/29eb5844-7d13-40f5-8c79-72d9e6235fcd)
+
+![ChangePW-SCalt](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/37281859-e35b-4ae3-a21a-73e546687a92)
+
+![ChangePW-UCalt](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/a2113f98-07b5-461c-b00c-e0c52c193abc)
+
+![ChangePW-Lengthalt](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/fe035250-4ab6-464f-b420-becdc9e41f27)
+
+![SQLiteStudio-selectDB](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/276abf96-5266-42fb-9a66-dc8f7c922d06)
+
+![SQLiteStudio-dataWide](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/3ad15820-1867-411c-8995-2ef1e98265dd)
