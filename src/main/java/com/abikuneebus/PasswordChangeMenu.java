@@ -13,11 +13,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.util.Duration;
 
 public class PasswordChangeMenu extends GridPane {
   // declare instance variables
@@ -67,6 +69,11 @@ public class PasswordChangeMenu extends GridPane {
     add(new Label("Password"), 0, 1);
     add(new Label("Confirm Password"), 0, 2);
 
+    // - defining tooltip
+    Tooltip passwordTooltip = new Tooltip(
+        "Password Requirements:\n- must be between 12 & 32 characters in length\n- must contain at least one uppercase letter, lowercase letter, and special character\n- must avoid using easily guessable patterns (\"qwerty\", \"123\", etc).");
+    passwordTooltip.setShowDelay(Duration.millis(300));
+
     // - defining text fields
     // new password
     changePWNew = new PasswordField();
@@ -84,7 +91,9 @@ public class PasswordChangeMenu extends GridPane {
 
     // - adding text fields
     add(changePWNew, 1, 1);
+    changePWNew.setTooltip(passwordTooltip);
     add(changePWConfirmNew, 1, 2);
+    changePWConfirmNew.setTooltip(passwordTooltip);
 
     // - buttons
     HBox buttonsBox = new HBox();
