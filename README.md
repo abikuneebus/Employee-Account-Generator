@@ -134,8 +134,8 @@ I also learned more about object-oriented programming than I did in 5 months wor
 
 If you are reading this, I cannot express enough how grateful I am for your time. This app is far from perfect, but I hope it speaks to a level of proficiency in software development that would translate well to an entry-level role. 
 
-Best,
-Brennan
+Best regards,
+Brennan O'Brien
 
 ### Screenshots
 ![Login-Demo](https://github.com/abikuneebus/Employee-Account-Generator/assets/113397554/800fddc1-0ad3-4d91-bea8-17d6dc10073c)
